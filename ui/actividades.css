@@ -1,0 +1,256 @@
+/* Panel lateral de una estación (#panel-skills): encabezado con progreso, controles, receta, franja en curso y fichas.
+   Solo usa tokens y componentes de game.css (secciones 1–5). Ritmo de 8 px: 4 · 8 · 12 · 16. */
+
+/* Ancho del panel: crece con la pantalla en vez de quedarse en 500 px. 1366 → 450 · 1920 → 572 · 2560 → 713. */
+body{--station-width:clamp(420px,calc(22vw + 150px),720px);--ui-scale:1;--map-center-x:calc((100vw - var(--station-width) - 16px) / 2)}
+.workspace-main{top:var(--space-2);right:var(--space-2);bottom:var(--space-2);padding:var(--space-3)}
+/* En 2560 todo el panel se agranda un 20 %: con solo ensanchar, el texto de 12 px se veía diminuto. */
+@media(min-width:2200px){
+  body{--ui-scale:1.2}
+  .workspace-main{zoom:1.2;width:calc(var(--station-width) / 1.2)}
+}
+
+/* Migas: volver a la estación anterior. */
+.station-back{display:inline-flex;align-items:center;gap:var(--space-1);margin-bottom:var(--space-3);padding:0 var(--space-3) 0 var(--space-1);color:var(--text-2)}
+.station-back .ico{flex:none;width:16px;height:16px;color:var(--gold-400)}
+.station-back span{overflow:hidden;text-overflow:ellipsis}
+.station-back:hover{color:var(--gold-100)}
+
+/* Encabezado: ícono + título arriba, progreso del oficio en una fila propia (antes se apretaba al costado). */
+#panel-skills .st-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-3);min-height:0;margin-bottom:var(--space-3);padding:var(--space-3) var(--space-4) var(--space-3) var(--space-3);
+  border-color:var(--border-gold);background:linear-gradient(90deg,#17130ef7 25%,#1a1611c7 62%,#1d18128c),url('../art/valle/color.webp');background-size:100%,220%;
+  background-position:center,var(--art-pos,50% 40%);box-shadow:var(--edge-light),var(--shadow-1)}
+#panel-skills .st-icon{width:48px;height:48px;border-color:var(--gold-500);border-radius:var(--radius-sm);background:radial-gradient(circle at 50% 35%,#3b3022,#15110c 80%)}
+#panel-skills .st-icon .ico{width:32px;height:32px}
+#panel-skills .st-title{align-self:center}
+#panel-skills .st-title small{margin-bottom:2px;font:600 var(--text-2xs)/1.2 var(--font-sans);letter-spacing:var(--tracking-caps);color:var(--gold-400)}
+#panel-skills .st-title h1{font:700 var(--text-2xl)/1.1 var(--font-serif);color:var(--gold-200);text-shadow:0 2px 0 #000}
+.st-skill{grid-column:1/-1;display:flex;align-items:center;gap:var(--space-3);min-width:0;padding-top:var(--space-3);border-top:1px solid #f0d9a61a}
+.st-skill[hidden]{display:none}
+.lvl{position:relative;display:grid;place-items:center;flex:none;width:40px;height:40px;border:1px solid var(--gold-600);border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,#3b3022,#110e0a 80%);box-shadow:var(--edge-dark)}
+.lvl .ico{width:26px;height:26px}
+.lvl b{position:absolute;right:-8px;bottom:-4px;min-width:24px;padding:0 5px;border-radius:var(--radius-pill);background:linear-gradient(160deg,var(--gold-200),var(--gold-500));
+  color:var(--text-on-gold);font:700 var(--text-sm)/18px var(--font-sans);font-variant-numeric:tabular-nums;text-align:center;box-shadow:0 0 0 1px #000}
+.lvl-info{flex:1;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px var(--space-3);min-width:0}
+.lvl-info .bar{grid-column:1/-1;height:8px}
+.lvl-info small{font-size:var(--text-xs);color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lvl-info .next-chip{justify-self:end;min-width:0;overflow:hidden;color:var(--text-2);font-size:var(--text-xs);text-overflow:ellipsis;white-space:nowrap}
+
+/* Cuerpo y controles. */
+#activity.st-body{gap:var(--space-3)}
+#activity-group,#combat-styles{width:100%}
+#activity-group button,#combat-styles button{flex:1;min-height:var(--control-md)}
+.arena-controls{display:grid;gap:var(--space-2)}
+.train-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2)}
+.train-row button{display:flex;align-items:center;gap:var(--space-2);min-width:0;min-height:var(--control-md);padding:0 var(--space-2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface-2);color:var(--text-2);font-size:var(--text-sm);transition:border-color var(--dur-fast),color var(--dur-fast)}
+.train-row button:hover{border-color:var(--border-gold);color:var(--text-1)}
+.train-row button .ico{flex:none;width:20px;height:20px}
+.train-row strong{overflow:hidden;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.train-row b{margin-left:auto;padding:0 6px;border-radius:var(--radius-pill);background:var(--surface-inset);color:var(--gold-200);font-size:var(--text-xs);font-variant-numeric:tabular-nums}
+.train-row button[aria-pressed=true]{border-color:var(--gold-500);background:linear-gradient(180deg,#54432a,#3a2f1d);color:var(--gold-100);box-shadow:var(--edge-light)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.filters:not(:has(>:not([hidden]))){display:none}
+
+/* Vida y raciones: barra de vida ancha y legible, raciones abajo. */
+.supplies{display:grid;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-inset);box-shadow:var(--shadow-inset)}
+.supplies[hidden]{display:none}
+.supplies-hp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--space-2)}
+.supplies-hp .ico{width:20px;height:20px}
+.supplies-hp .bar{height:12px}
+.supplies-hp b{min-width:48px;color:var(--text-1);font:600 var(--text-md)/1 var(--font-sans);font-variant-numeric:tabular-nums;text-align:right}
+.supplies-food{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.supplies-food .ration-slot{display:inline-grid}
+.supplies-food .slot{width:36px;height:36px}
+.supplies-food .slot .ico{width:26px;height:26px}
+.supplies-food select{flex:1;min-width:0;max-width:none;min-height:var(--control-sm)}
+.supplies-food small{flex-basis:100%;color:var(--text-3);font-size:var(--text-xs)}
+#tonic-status{justify-self:start}
+
+/* Plegaria. */
+.prayer-controls{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.prayer-controls[hidden]{display:none}
+#prayer-toggle b{font-variant-numeric:tabular-nums}
+#prayer-toggle span{color:var(--text-2);font-weight:500}
+#prayer-toggle[aria-pressed=true]{border-color:var(--gold-400);background:linear-gradient(180deg,#54432a,#3a2f1d);color:var(--gold-100)}
+.prayer-controls p{flex-basis:100%;color:var(--text-3);font-size:var(--text-xs);line-height:var(--leading)}
+
+/* Tarjeta de la receta: lo que elegiste, lo que pide, lo que da y una sola acción principal. */
+.recipe{display:grid;gap:var(--space-3);margin:0;padding:var(--space-4);border:1px solid var(--border-gold);border-radius:var(--radius-md);
+  background:radial-gradient(120% 90% at 0 0,#3a2d1c,#0000 60%),linear-gradient(180deg,#2a2118,#1c1712);box-shadow:var(--edge-light),var(--edge-dark),var(--shadow-2)}
+.recipe[hidden]{display:none}
+.rc-head{display:flex;align-items:center;gap:var(--space-3)}
+.rc-head .slot-big{flex:none;width:52px;height:52px}
+.rc-head .slot-big .ico,.rc-head .slot-big svg{width:38px;height:38px}
+.rc-title{display:grid;gap:var(--space-2);min-width:0}
+.rc-title h2{font:700 var(--text-xl)/1.15 var(--font-serif);color:var(--gold-200)}
+.rc-title .chips{gap:6px}
+.recipe .chip b{font-variant-numeric:tabular-nums}
+/* Rótulos de fila (Pide, Usa, Da, Raro): misma tipografía en todos. */
+.chips-needs>small,.rc-io small:first-child{font:600 var(--text-2xs)/1 var(--font-sans);letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--gold-500)}
+.chips-needs{gap:6px}
+.chips-needs>small{min-width:36px}
+.rc-io{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-3) var(--space-4);padding:var(--space-3);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  background:var(--surface-inset);box-shadow:var(--shadow-inset)}
+.rc-io>div{display:grid;gap:var(--space-2);min-width:0}
+.rc-io>div>div{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)}
+.rc-arrow{align-self:center;display:grid;margin-top:var(--space-4);color:var(--gold-500)}
+.rc-arrow .ico{width:18px;height:18px}
+.rc-drops{margin-left:auto}
+.rc-drops .io>b .ico{width:10px;height:10px;vertical-align:-1px}
+.recipe-output{display:inline-flex;align-items:center;gap:var(--space-2)}
+.recipe-output>small{display:grid;gap:1px;color:var(--text-3);font:500 var(--text-xs)/1.25 var(--font-sans);font-variant-numeric:tabular-nums;white-space:nowrap}
+.recipe-output>small span:first-child{color:var(--text-2)}
+.rc-note{color:var(--text-2);font-size:var(--text-sm);line-height:var(--leading)}
+.rc-lock{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border:1px solid var(--red-700);border-radius:var(--radius-sm);
+  background:#2b1510;color:var(--red-300);font-size:var(--text-sm);line-height:var(--leading-tight)}
+.rc-lock .ico{flex:none;width:16px;height:16px}
+
+/* Acción principal: latón claro, 44 px, ícono SVG. Es lo único dorado y lleno de toda la tarjeta. */
+.action-start{display:flex;align-items:center;justify-content:center;gap:var(--space-2);width:100%;min-height:var(--control-lg);padding:0 var(--space-4);
+  border:1px solid var(--gold-300);border-radius:var(--radius-sm);background:linear-gradient(180deg,#e9c77f,#c09243 46%,#94692b);color:var(--text-on-gold);
+  font:700 var(--text-lg)/1 var(--font-serif);letter-spacing:.03em;text-shadow:0 1px 0 #ffeec266;
+  box-shadow:inset 0 1px 0 #fff6d699,inset 0 -2px 0 #0000004d,0 0 0 1px #000,var(--shadow-2);transition:filter var(--dur-fast),transform var(--dur-fast)}
+.action-start .ico{flex:none;width:20px;height:20px}
+.action-start:hover{filter:brightness(1.08) saturate(1.05)}
+.action-start:active{transform:translateY(1px);filter:brightness(.95);box-shadow:inset 0 2px 4px #0006,0 0 0 1px #000}
+.action-start[aria-disabled=true]{border-color:var(--border);background:var(--surface-3);color:var(--text-3);text-shadow:none;box-shadow:var(--edge-light),0 0 0 1px #000;filter:none;cursor:not-allowed}
+.action-start[aria-disabled=true]:active{transform:none}
+.action-start.action-stop{border-color:var(--red-500);background:linear-gradient(180deg,#7b3628,#53221a);color:#ffe3da;text-shadow:0 1px 0 #0008;
+  box-shadow:inset 0 1px 0 #ffb9a640,0 0 0 1px #000,var(--shadow-2)}
+.action-stop .ico{width:16px;height:16px}
+
+/* Amenaza del rival. */
+.threat{--tone:var(--gold-400);display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4) var(--space-3) var(--space-3);
+  border:1px solid color-mix(in srgb,var(--tone) 45%,transparent);border-radius:var(--radius-sm);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--tone) 16%,transparent),#0000 75%),var(--surface-inset)}
+.threat-easy,.threat-dot-easy{--tone:var(--green-500)}
+.threat-fair,.threat-dot-fair{--tone:var(--gold-400)}
+.threat-risky,.threat-dot-risky{--tone:#e08a3a}
+.threat-deadly,.threat-dot-deadly{--tone:var(--red-500)}
+.threat-gauge{flex:none;display:grid;place-content:center;justify-items:center;width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(closest-side,#14110d 78%,#0000 80% 100%),conic-gradient(var(--tone) calc(var(--win) * 1%),#ffffff17 0)}
+.threat-gauge b{color:var(--text-1);font:700 var(--text-xl)/1 var(--font-sans);font-variant-numeric:tabular-nums}
+.threat-gauge b i{font-size:var(--text-xs);font-style:normal;color:var(--text-2)}
+.threat-gauge small{margin-top:2px;color:var(--text-3);font-size:var(--text-2xs)}
+.threat-info{display:grid;gap:2px;min-width:0}
+.threat-info strong{color:var(--tone);font:700 var(--text-lg)/1.2 var(--font-serif);letter-spacing:.06em;text-transform:uppercase}
+.threat-info span{color:var(--text-2);font-size:var(--text-sm);line-height:var(--leading-tight)}
+.threat-info span b{color:var(--text-1);font-variant-numeric:tabular-nums}
+.threat-info .threat-tip{color:var(--text-3);font-style:italic}
+
+/* Franja en curso: aparece solo mientras la actividad corre. */
+#activity .run-strip{display:flex;align-items:center;gap:var(--space-3);max-width:none;margin:0;padding:var(--space-3);border:1px solid var(--green-700);border-radius:var(--radius-md);
+  background:linear-gradient(135deg,#262a19,#1a1912 70%);box-shadow:var(--edge-light),var(--shadow-1)}
+#activity .run-strip[hidden]{display:none}
+.run-strip .run-icon{position:relative;display:grid;place-items:center;flex:none;width:40px;height:40px;border:1px solid var(--green-700);border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,#34331f,#12110c 80%)}
+.run-strip .run-icon::after{content:'';position:absolute;inset:-4px;border:2px solid var(--green-500);border-radius:50%;opacity:0;animation:run-ring 1.8s var(--ease-out) infinite}
+@keyframes run-ring{0%{opacity:.7;transform:scale(.85)}100%{opacity:0;transform:scale(1.15)}}
+.run-strip .run-icon .ico{width:24px;height:24px}
+.run-details{flex:1;display:grid;gap:6px;min-width:0}
+.run-line{display:flex;align-items:baseline;gap:var(--space-2);min-width:0;color:var(--text-2);font-size:var(--text-xs)}
+.run-line small{color:var(--green-300);font:600 var(--text-2xs)/1 var(--font-sans);letter-spacing:var(--tracking-caps)}
+.run-line #cycle-time,.run-sub span:last-child{margin-left:auto;font-variant-numeric:tabular-nums;white-space:nowrap}
+.task-progress{height:4px;overflow:hidden;border-radius:var(--radius-pill);background:#0c0a07;box-shadow:inset 0 0 0 1px #000}
+.task-progress i{display:block;width:100%;height:100%;background:linear-gradient(90deg,var(--green-700),var(--green-500));transform:scaleX(0);transform-origin:left}
+#run-progress:not([hidden]) .task-progress i{will-change:transform}
+#run-xp{display:grid;gap:4px}
+#run-level{color:var(--gold-200);font-size:var(--text-sm);font-weight:600;white-space:nowrap}
+#run-xp-gain{color:var(--gold-300);font-size:var(--text-xs);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+#run-xp-gain:not(:empty){animation:xp-earned 1.7s ease-out forwards}
+@keyframes xp-earned{0%{opacity:0;transform:translateY(3px)}15%,75%{opacity:1;transform:none}100%{opacity:0}}
+#run-xp-left{color:var(--text-2)}
+#run-xp-meter{height:8px}
+#run-xp-bar{background:linear-gradient(90deg,#b46c27,#f4bc58 65%,#ffe2a0);transition:width .24s ease}
+#run-session{display:block;color:var(--text-3);font-size:var(--text-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#run-session[hidden]{display:none}
+
+/* Fichas de actividad: un estado claro por color (listo · falta material · bloqueado · en curso). */
+.actions{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:var(--space-2)}
+.actions[hidden]{display:none}
+#actions .tile{gap:4px;min-height:108px;padding:var(--space-3) var(--space-1) 10px;border-radius:var(--radius-sm);background:linear-gradient(180deg,#2a2219,#1f1913);
+  transition:border-color var(--dur-fast),background-color var(--dur-fast),transform var(--dur-fast) var(--ease-out)}
+#actions .tile:hover{transform:translateY(-2px)}
+#actions .tile:active{transform:translateY(0)}
+#actions .tile .slot{width:40px;height:40px;margin-bottom:2px}
+#actions .tile .slot .ico,#actions .tile .slot svg{width:28px;height:28px}
+#actions .tile strong{color:var(--text-1);font-size:var(--text-sm);text-align:center}
+#actions .tile small{font-size:var(--text-xs);font-variant-numeric:tabular-nums}
+#actions .tile .tile-status{padding:1px 6px;border-radius:var(--radius-pill);font-weight:600}
+#actions .tile[data-state=ready] .tile-status{color:var(--green-300)}
+#actions .tile[data-state=missing] .tile-status{background:#e0a2401f;color:#f2c27e}
+#actions .tile[data-state=locked]{background:linear-gradient(180deg,#201b15,#18140f);border-color:var(--border-subtle)}
+#actions .tile[data-state=locked] strong{color:var(--text-2)}
+#actions .tile[data-state=locked] .tile-status{color:var(--text-3)}
+#actions .tile[data-state=locked] .slot{filter:grayscale(1) brightness(.55)}
+#actions .tile[data-state=running] .tile-status{background:#47622c66;color:var(--green-300)}
+#actions .tile[aria-pressed=true]{border-color:var(--gold-300);background:linear-gradient(180deg,#4a3a24,#30271a)}
+#actions .tile .food-heal{color:var(--text-2)!important;font-weight:500}
+.tile-lock{top:6px;right:6px}
+.tile-lock .ico{width:14px;height:14px;opacity:.85}
+.tile-threat{position:absolute;top:6px;right:6px;width:10px;height:10px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 2px #000a,0 0 6px var(--tone)}
+
+/* Zonas: recorte del mapa que se ve detrás del encabezado. */
+#panel-skills[data-zone=forest]{--art-pos:8% 14%}
+#panel-skills[data-zone=arena]{--art-pos:49% 15%}
+#panel-skills[data-zone=mine]{--art-pos:100% 18%}
+#panel-skills[data-zone=market]{--art-pos:8% 56%}
+#panel-skills[data-zone=camp]{--art-pos:52% 52%}
+#panel-skills[data-zone=forge]{--art-pos:93% 51%}
+#panel-skills[data-zone=shrine]{--art-pos:36% 77%}
+#panel-skills[data-zone=docks]{--art-pos:92% 84%}
+
+@media(max-width:760px){
+  #panel-skills .st-title h1{font-size:var(--text-xl)}
+  .actions{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+  .run-line small,#run-session{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .run-strip .run-icon::after,#run-xp-gain:not(:empty){animation:none}
+  #actions .tile:hover{transform:none}
+}
+
+/* Jefes ya vencidos: sello en la tarjeta con las veces, y el historial en el detalle. */
+.tile-won{position:absolute;top:5px;left:5px;display:inline-flex;align-items:center;gap:2px;height:18px;padding:0 6px 0 4px;border-radius:9px;
+  background:linear-gradient(#3e6a2c,#27461c);border:1px solid #8fd06a;box-shadow:0 0 0 1px #000a;font:700 10px/1 var(--font-sans);color:#e8ffd8;font-style:normal}
+.tile-won svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.boss-record{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:10px 0 0;padding:9px 12px;border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);background:var(--surface-inset);font:500 var(--text-xs)/1.2 var(--font-sans);color:var(--text-2)}
+.boss-record b{color:var(--text-1);font-weight:700}
+.boss-record small{flex-basis:100%;color:var(--text-3);font-size:var(--text-2xs)}
+.boss-record-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:#2a2017;border:1px solid var(--border);
+  font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:10px;color:var(--text-3)}
+.boss-record-won{border-color:#5e8f46}
+.boss-record-won .boss-record-badge{background:linear-gradient(#3e6a2c,#27461c);border-color:#8fd06a;color:#e8ffd8}
+.boss-record-badge svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.rare-note{display:flex;gap:8px;align-items:flex-start;margin:8px 0 0;padding:8px 10px;border:1px solid #6b5426;border-radius:var(--radius-md);
+  background:linear-gradient(90deg,#2c2111,#1d160d);font:500 var(--text-xs)/1.35 var(--font-sans);color:var(--text-2)}
+.rare-note>svg,.rare-note>span:first-child svg{flex:none;width:18px;height:18px}
+.rare-note b{color:#ffd98a}
+
+/* Cofre con el mismo lenguaje que el resto de los paneles: sin fondo de madera, sin iniciales ilustradas ni mantel.
+   El encabezado es el de las estaciones (ícono enmarcado, rótulo dorado y título serif sobre el valle oscurecido). */
+.workspace[data-view=bank] .bank-backdrop{display:none}
+#panel-bank .bank-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-3);min-height:0;margin-bottom:var(--space-3);
+  padding:var(--space-3) var(--space-4) var(--space-3) var(--space-3);border:1px solid var(--border-gold);border-radius:var(--radius-md);
+  background:linear-gradient(90deg,#17130ef7 25%,#1a1611c7 62%,#1d18128c),url('../art/valle/color.webp');background-size:100%,220%;
+  background-position:center,52% 52%;box-shadow:var(--edge-light),var(--shadow-1)}
+#panel-bank .bank-head::after{display:none}
+#panel-bank .bank-emblem{width:48px;height:48px;border:1px solid var(--gold-500);border-radius:var(--radius-sm);object-fit:cover;background:#15110c}
+#panel-bank .st-title small{display:block;margin-bottom:2px;font:600 var(--text-2xs)/1.2 var(--font-sans);letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--gold-400)}
+#panel-bank .st-title h1{font:700 var(--text-2xl)/1.1 var(--font-serif);color:var(--gold-200);text-shadow:0 2px 0 #000}
+#panel-bank .bank-meter b{background:var(--surface-inset);border-color:var(--border);font:600 var(--text-xs)/16px var(--font-sans);color:var(--text-1)}
+#panel-bank .bank-meter progress{border-color:var(--border)}
+#workspace-main[data-screen=bank]{background:linear-gradient(145deg,#2d261d,#201c16 55%);border-color:#876945;box-shadow:none}
+/* Barra de progreso de cada estilo de entrenamiento, al pie del botón. */
+.train-row button{position:relative;overflow:hidden}
+.training-bar{position:absolute;left:6px;right:6px;bottom:3px;height:3px;border-radius:2px;background:#0000005c;overflow:hidden}
+.training-bar u{display:block;height:100%;background:linear-gradient(90deg,var(--gold-600),var(--gold-300));text-decoration:none;transition:width .4s ease}
+.train-row button[aria-pressed=true] .training-bar u{background:linear-gradient(90deg,#d9a54a,#ffe3a0)}
+/* Peleas: el botón encabeza el detalle (antes quedaba al fondo, debajo de la amenaza y el botín). */
+#recipe-detail>.action-start:first-child,#recipe-detail>.rc-lock:first-child+.action-start{margin:0 0 var(--space-3)}
+#recipe-detail>.rc-lock:first-child{margin-top:0}
+.action-target{font:600 var(--text-sm)/1 var(--font-sans);color:inherit;opacity:.72;margin-left:2px}
+.action-target::before{content:'· ';}

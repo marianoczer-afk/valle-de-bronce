@@ -1,0 +1,71 @@
+/* Valle de Bronce · Mercado (zona 'market' del panel lateral): Provisiones, Mejoras y Equipo (venta).
+   Todo va acotado a selectores del mercado; el panel de actividades genérico es de otra hoja. */
+
+/* ── Provisiones: una fila por producto, precio alineado a la derecha ──────────── */
+#panel-skills[data-zone=market] .actions:has(.provision){grid-template-columns:1fr;gap:6px}
+.tile.provision{display:grid;grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"icon info price" "icon buy buy";
+  align-items:center;justify-items:stretch;gap:6px 12px;padding:10px 12px;text-align:left;cursor:default}
+.provision>.slot{grid-area:icon;align-self:start;width:44px;height:44px}
+.provision>.slot .ico{width:32px;height:32px}
+.provision-info{grid-area:info;display:grid;gap:3px;min-width:0}
+.provision-info strong{max-height:none;overflow:hidden;font:600 var(--text-base)/1.2 var(--font-sans);text-overflow:ellipsis;white-space:nowrap;color:var(--text-1)}
+.provision-info small{overflow:hidden;font-size:var(--text-xs);text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)}
+.provision-info .food-heal{color:var(--green-300)}
+.provision-info .provision-need{color:var(--text-3)}
+.provision-info .provision-lock{display:flex;align-items:center;gap:4px;color:#ffcf9a}
+.provision-lock .ico{width:12px;height:12px}
+.provision-price{grid-area:price;display:grid;justify-items:end;gap:3px;align-self:start}
+.provision-price b{display:inline-flex;align-items:center;gap:5px;font:700 var(--text-lg)/1 var(--font-sans);color:var(--gold-200)}
+.provision-price b .ico{width:17px;height:17px}
+.provision-price small{font-size:var(--text-2xs);color:var(--text-3)}
+.provision-buy{grid-area:buy;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.provision-submit{min-width:96px}
+.tile.provision:hover{background:linear-gradient(160deg,#30271c,#231d16)}
+/* Sin plata o sin materiales para esa cantidad: el precio se pone rojo y el botón se apaga. */
+.provision-short .provision-price b{color:var(--red-300)}
+.provision-off{border-style:dashed;background:#1a1611}
+.provision-off>.slot{filter:grayscale(.8) brightness(.7)}
+.provision-off .provision-price b{color:var(--text-3)}
+/* Compra hecha: destello dorado que se apaga solo. */
+.provision-bought{animation:provision-bought .9s var(--ease-out)}
+@keyframes provision-bought{0%{box-shadow:inset 0 0 0 2px var(--gold-200),0 0 18px #f0b53c88}100%{box-shadow:inset 0 0 0 0 transparent,0 0 0 transparent}}
+
+/* Selector de cantidad del mercado (− n + Máx). */
+#panel-skills[data-zone=market] .qty{display:flex;height:30px;overflow:hidden;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-inset)}
+#panel-skills[data-zone=market] .qty button{min-width:30px;padding:0 8px;border:0;background:linear-gradient(180deg,#342b20,#261f17);font:600 var(--text-base)/1 var(--font-sans);color:var(--gold-200)}
+#panel-skills[data-zone=market] .qty button:hover{background:#3d3226;color:var(--gold-100)}
+#panel-skills[data-zone=market] .qty .qty-max{padding:0 10px;border-left:1px solid var(--border);font-size:var(--text-xs);letter-spacing:.04em}
+#panel-skills[data-zone=market] .qty input{width:52px;min-height:0;height:100%;padding:0 4px;border:0;border-inline:1px solid var(--border);border-radius:0;
+  background:#0f0d0a;text-align:center;font:700 var(--text-base)/1 var(--font-sans);font-variant-numeric:tabular-nums;color:var(--text-1);appearance:textfield}
+#panel-skills[data-zone=market] .qty input::-webkit-inner-spin-button,#panel-skills[data-zone=market] .qty input::-webkit-outer-spin-button{appearance:none;margin:0}
+
+/* ── Mejoras: tarjetas de proyecto con el costo bien visible ──────────────────── */
+#panel-skills[data-zone=market] .actions:not(:has(.provision)) .tile{min-height:112px}
+#panel-skills[data-zone=market] .actions:not(:has(.provision)) .tile strong{max-height:3.5em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+
+/* ── Equipo: venta ──────────────────────────────────────────────────────────────── */
+.market-sales{display:grid;gap:8px}
+.market-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.market-filters .seg{flex:none}
+.market-filters input{flex:1;min-width:140px;min-height:var(--control-sm);padding:0 10px;font-size:var(--text-sm)}
+.market-grid{display:grid;grid-template-columns:repeat(auto-fill,44px);gap:5px;max-height:34dvh;overflow:auto;padding:8px;
+  border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--surface-inset);box-shadow:var(--shadow-inset)}
+.market-grid .io,.market-grid .slot{width:44px;height:44px}
+.market-grid .slot .ico{width:32px;height:32px}
+#sale-form{display:grid;gap:10px;padding:12px;border:1px solid var(--border-gold);border-radius:var(--radius-md);
+  background:linear-gradient(180deg,#2e2519,#1e1913);box-shadow:var(--edge-light),var(--shadow-2)}
+#sale-form[hidden]{display:none}
+.sale-title{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--space-3)}
+.sale-icon .slot-big{width:56px;height:56px}
+.sale-icon .slot-big .ico{width:42px;height:42px}
+.sale-text{display:grid;gap:4px;min-width:0}
+.sale-text strong{overflow:hidden;font:700 var(--text-lg)/1.15 var(--font-serif);text-overflow:ellipsis;white-space:nowrap;color:var(--gold-100)}
+#sale-stock{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;font-size:var(--text-xs);color:var(--text-2)}
+#sale-stock .ico{width:14px;height:14px}
+#sale-stock b{color:var(--gold-200)}
+.sale-amount{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)}
+.sale-amount label{font-size:var(--text-sm);color:var(--text-2)}
+#sale-submit{width:100%;min-height:var(--control-lg);gap:6px;font:700 var(--text-base)/1 var(--font-serif)}
+#sale-submit .ico{width:18px;height:18px}
+#sale-submit b{font-family:var(--font-sans);font-variant-numeric:tabular-nums}
+#sale-empty{padding:var(--space-5);border:1px dashed var(--border);border-radius:var(--radius-md)}
