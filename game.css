@@ -1,0 +1,1160 @@
+/* Valle de Bronce · hoja de estilos del juego.
+   Estilo "medieval premium": cuero oscuro, latón y oro viejo, títulos con serifa y números claros.
+   Orden: 1 fuentes · 2 tokens · 3 base · 4 componentes · 5 HUD superior · 6 mapa · 7 objetivo · 8 avisos ·
+   9 panel lateral · 10 personaje · 11 colección y diario · 12 diálogos · 13 escena · 14 cofre · 15 responsive.
+   Los paneles nuevos van en hojas aparte y usan los tokens y componentes de acá (ver ui/README.md). */
+
+/* 1 · Fuentes embebidas (OFL, recortadas a latín + español con tools/fuentes.py). Sin red: funcionan con file://. */
+@font-face{font-family:'Valle Serif';src:url('fonts/valle-serif.woff') format('woff');font-weight:400 700;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-400.woff') format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-500.woff') format('woff');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-600.woff') format('woff');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-700.woff') format('woff');font-weight:700 900;font-display:swap}
+
+/* 2 · Tokens. Usá siempre estos nombres; los alias de abajo quedan para el código viejo. */
+:root{
+  color-scheme:dark;
+  /* Superficies, de la más profunda a la más elevada. */
+  --surface-0:#100e0b;
+  --surface-1:#1d1914;
+  --surface-2:#272119;
+  --surface-3:#322a1f;
+  --surface-4:#40352653;
+  --surface-inset:#14110d;
+  --surface-overlay:#16130fef;
+  /* Bordes. */
+  --border-subtle:#3b3227;
+  --border:#5b4a35;
+  --border-strong:#82664a;
+  --border-gold:#b08a52;
+  /* Oro viejo: 100 es casi crema, 700 es latón oscuro. */
+  --gold-100:#fcefcf;
+  --gold-200:#f0d9a6;
+  --gold-300:#e2c07f;
+  --gold-400:#cfa463;
+  --gold-500:#ab8247;
+  --gold-600:#7d5f35;
+  --gold-700:#54401f;
+  /* Texto. --text-3 es el mínimo legible para texto chico sobre superficies (≥ 4.5:1). */
+  --text-1:#f2e8d5;
+  --text-2:#c8b99b;
+  --text-3:#a19378;
+  --text-on-gold:#2a1d08;
+  /* Semánticos. 300 para texto, 500 para íconos y barras, 700 para bordes y fondos. */
+  --green-300:#c8e6a0;
+  --green-500:#88b955;
+  --green-700:#47622c;
+  --red-300:#ffbcab;
+  --red-500:#da5a42;
+  --red-700:#7c3022;
+  --blue-300:#bcd6f7;
+  --blue-500:#6f9be0;
+  --blue-700:#2f4a70;
+  /* Rareza de objetos. */
+  --rarity-common:#c9c1a0;
+  --rarity-uncommon:#7fc15a;
+  --rarity-rare:#5aa2ea;
+  --rarity-epic:#b27be8;
+  --rarity-legendary:#f0b53c;
+  /* Espaciado (base 4). */
+  --space-half:2px;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  /* Radios. */
+  --radius-xs:3px;
+  --radius-sm:5px;
+  --radius-md:8px;
+  --radius-lg:12px;
+  --radius-pill:999px;
+  /* Elevación: 1 apoyado, 2 flotante, 3 panel, 4 diálogo. */
+  --shadow-1:0 1px 2px #000a;
+  --shadow-2:0 3px 8px #000a;
+  --shadow-3:0 10px 28px #000b;
+  --shadow-4:0 24px 64px #000e;
+  --shadow-inset:inset 0 1px 3px #000c;
+  --edge-light:inset 0 1px 0 #ffe7b51f;
+  --edge-dark:0 0 0 1px #0009;
+  /* Tipografía. */
+  --font-serif:'Valle Serif','Palatino Linotype','Book Antiqua',Georgia,serif;
+  --font-sans:'Inter',system-ui,'Segoe UI',Roboto,sans-serif;
+  --text-2xs:10px;
+  --text-xs:11px;
+  --text-sm:12px;
+  --text-md:13px;
+  --text-base:14px;
+  --text-lg:16px;
+  --text-xl:19px;
+  --text-2xl:22px;
+  --leading-tight:1.15;
+  --leading:1.4;
+  --tracking-caps:.12em;
+  /* Alturas de control (todo lo clicable mide al menos 28 px). */
+  --control-sm:28px;
+  --control-md:36px;
+  --control-lg:44px;
+  /* Capas. */
+  --z-map:1;
+  --z-map-ui:5;
+  --z-panel:6;
+  --z-overlay:8;
+  --z-hud:10;
+  --z-toast:14;
+  --z-notice:20;
+  --z-modal:30;
+  /* Movimiento. */
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+  --dur-fast:120ms;
+  --dur:200ms;
+  --drawer-time:420ms;
+  /* Medidas del HUD. */
+  --hud:60px;
+  --pack-size:clamp(20px,1.9vw,34px);
+  /* Alias (código anterior). */
+  --bg:var(--surface-0);
+  --panel:var(--surface-1);
+  --panel-2:var(--surface-2);
+  --inset:var(--surface-inset);
+  --line:var(--border);
+  --gold:var(--gold-400);
+  --gold-hi:var(--gold-200);
+  --ink:var(--text-1);
+  --muted:var(--text-2);
+  --green:var(--green-500);
+  --red:var(--red-500);
+  --blue:var(--blue-500);
+  --serif:var(--font-serif);
+  font:400 var(--text-base)/var(--leading) var(--font-sans);
+  font-feature-settings:'cv11';
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 3 · Base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);overflow:hidden}
+h1,h2,h3,p{margin:0}
+button,select,input,textarea{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+small{font-size:var(--text-xs);color:var(--muted)}
+b,strong{font-weight:700}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.num,.chip b,.pill b,.io>b,.stat b,.lvl b{font-variant-numeric:tabular-nums}
+.ico{width:1.25em;height:1.25em;flex:none;vertical-align:-.25em;filter:drop-shadow(0 1px 0 #0008)}
+/* Íconos de interfaz: trazo de color del texto, sin sombra. */
+.ico-ui{width:20px;height:20px;filter:none;vertical-align:middle}
+/* Foco visible y consistente en todo el juego. */
+:focus-visible{outline:2px solid var(--gold-200);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+/* Barras de desplazamiento finas, del color del cuero. */
+*{scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{border:3px solid transparent;border-radius:var(--radius-pill);background:var(--border-strong) padding-box}
+::-webkit-scrollbar-thumb:hover{background-color:var(--gold-500)}
+::selection{background:#cfa46355;color:var(--gold-100)}
+
+/* 4 · Componentes */
+
+/* Panel enmarcado: cuero con filo dorado y una línea oscura por fuera. */
+.frame{border:1px solid var(--border-strong);border-radius:var(--radius-md);background:linear-gradient(160deg,var(--surface-2),var(--surface-1) 62%);
+  box-shadow:var(--edge-light),var(--edge-dark),var(--shadow-3)}
+
+/* Botones. .btn es el principal (latón); -ghost secundario, -danger para acciones que cortan algo. */
+.btn,.outline{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:var(--control-md);padding:0 var(--space-4);
+  border:1px solid var(--gold-500);border-radius:var(--radius-sm);background:linear-gradient(180deg,#76603f,#4e3d26);color:var(--gold-100);
+  font:600 var(--text-md)/1 var(--font-sans);letter-spacing:.01em;white-space:nowrap;text-decoration:none;text-shadow:0 1px 0 #0009;
+  box-shadow:inset 0 1px 0 #ffe7b54d,inset 0 -2px 0 #0003,var(--shadow-1);transition:background-color var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast),filter var(--dur-fast)}
+.btn:hover:not(:disabled,[aria-disabled=true]),.outline:hover:not(:disabled){border-color:var(--gold-300);filter:brightness(1.12)}
+.btn:active:not(:disabled,[aria-disabled=true]),.outline:active:not(:disabled){filter:brightness(.92);box-shadow:inset 0 2px 4px #0007;transform:translateY(1px)}
+.btn:disabled,.btn[aria-disabled=true],.outline:disabled{filter:grayscale(.7) brightness(.72);opacity:.75;cursor:not-allowed}
+.btn .ico{width:18px;height:18px}
+.btn-small,.outline{min-height:var(--control-sm);padding:0 var(--space-3);font-size:var(--text-sm)}
+.btn-small .ico{width:16px;height:16px}
+.btn-ghost,.outline{border-color:var(--border-strong);background:linear-gradient(180deg,#342b20,#261f17);color:var(--text-1);box-shadow:var(--edge-light),var(--shadow-1)}
+.btn-ghost:hover:not(:disabled,[aria-disabled=true]),.outline:hover:not(:disabled){border-color:var(--gold-500);color:var(--gold-100);filter:brightness(1.15)}
+.btn-ghost[aria-pressed=true]{border-color:var(--gold-400);background:linear-gradient(180deg,#4d3e26,#33291a);color:var(--gold-100);box-shadow:inset 0 0 0 1px #cfa46366,var(--edge-light)}
+.btn-danger,.delete-character{border-color:#a5503c;background:linear-gradient(180deg,#6a3026,#4a2019);color:var(--red-300)}
+.btn-danger:hover:not(:disabled),.delete-character:hover:not(:disabled){border-color:var(--red-500);color:#ffd9cf}
+
+/* Botón cuadrado con ícono (HUD, cerrar diálogos). */
+.icon-button{display:inline-grid;place-items:center;flex:none;width:var(--control-md);height:var(--control-md);padding:0;border:1px solid var(--border-strong);
+  border-radius:var(--radius-md);background:linear-gradient(180deg,#342b20,#231c15);color:var(--gold-200);box-shadow:var(--edge-light),var(--shadow-1);
+  transition:background-color var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.icon-button:hover{border-color:var(--gold-400);background:linear-gradient(180deg,#43372a,#2c241a);color:var(--gold-100)}
+.icon-button:active{background:#1c1712;box-shadow:inset 0 2px 4px #0009;color:var(--gold-300)}
+.icon-button .ico-ui{width:20px;height:20px}
+.icon-button-small{width:var(--control-sm);height:var(--control-sm);border-radius:var(--radius-sm)}
+.icon-button-small .ico-ui{width:18px;height:18px}
+
+/* Fichas de dato (tiempo, XP, daño…) y fichas seleccionables. */
+.chips{display:flex;flex-wrap:wrap;gap:var(--space-1) 5px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 7px 0 5px;border:1px solid var(--border-subtle);border-radius:var(--radius-pill);
+  background:var(--surface-inset);color:var(--text-1);font-size:var(--text-sm);line-height:1;box-shadow:var(--edge-light)}
+.chip b{font-weight:600}
+.chip .ico{width:16px;height:16px}
+.chip-good{border-color:var(--green-700);color:var(--green-300)}
+.chip-bad{border-color:var(--red-700);color:var(--red-300)}
+.x2{font:700 var(--text-2xs)/1 var(--font-sans);font-style:normal;color:var(--gold-200)}
+.next-chip{display:inline-flex;align-items:center;gap:var(--space-1);max-width:100%;min-height:22px;padding:0 var(--space-2);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-pill);background:var(--surface-inset);color:var(--text-2);font-size:var(--text-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button.next-chip:hover{border-color:var(--gold-500);color:var(--gold-200)}
+.next-chip .ico{width:13px;height:13px}
+.tag{display:inline-flex;align-items:center;min-height:22px;padding:0 var(--space-2);border:1px solid var(--green-700);border-radius:var(--radius-pill);background:#26331c;color:var(--green-300);font-size:var(--text-xs)}
+.chip-row{display:flex;flex-wrap:wrap;gap:var(--space-1)}
+.chip-row button{min-height:var(--control-sm);padding:0 var(--space-3);border:1px solid var(--border);border-radius:var(--radius-pill);background:var(--surface-inset);color:var(--text-2);font-size:var(--text-sm);font-weight:500}
+.chip-row button:hover{border-color:var(--border-strong);color:var(--text-1)}
+.chip-row button[aria-pressed=true]{border-color:var(--gold-400);background:#3b2f1d;color:var(--gold-100)}
+.empty{padding:var(--space-4);color:var(--muted);text-align:center;font-size:var(--text-sm)}
+
+/* Control segmentado: un canal hundido con opciones; la elegida se levanta en latón. */
+.seg{display:flex;flex-wrap:wrap;gap:var(--space-half);width:fit-content;max-width:100%;padding:3px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);
+  background:var(--surface-inset);box-shadow:var(--shadow-inset)}
+.seg button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;padding:0 var(--space-3);border:1px solid transparent;border-radius:var(--radius-sm);
+  background:none;color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;transition:color var(--dur-fast),background-color var(--dur-fast)}
+.seg button .ico{width:16px;height:16px}
+.seg button span{font-size:var(--text-2xs);font-weight:500;color:var(--text-3)}
+.seg button:hover{background:#ffffff0a;color:var(--text-1)}
+.seg button[aria-pressed=true]{border-color:var(--gold-500);background:linear-gradient(180deg,#54432a,#3a2f1d);color:var(--gold-100);box-shadow:var(--edge-light),var(--shadow-1)}
+.seg button[aria-pressed=true] span{color:var(--gold-300)}
+.seg-small button{min-height:var(--control-sm);padding:0 10px;font-size:var(--text-xs)}
+
+/* Pestañas (la del HUD es la principal; ver sección 5). */
+.tabs{display:flex;gap:var(--space-half);padding:3px;border:1px solid var(--border);border-radius:var(--radius-md);background:#0d0b0899;box-shadow:var(--shadow-inset)}
+.tabs button{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:30px;padding:0 var(--space-3);border:1px solid transparent;
+  border-radius:var(--radius-sm);background:none;color:var(--text-2);font-size:var(--text-md);font-weight:600;transition:color var(--dur-fast),background-color var(--dur-fast)}
+.tabs button .ico{width:20px;height:20px}
+.tabs button:hover{background:#ffffff0d;color:var(--text-1)}
+.tabs button[aria-pressed=true]{border-color:var(--gold-500);background:linear-gradient(180deg,#54432a,#3a2f1d);color:var(--gold-100);box-shadow:var(--edge-light),var(--shadow-1)}
+
+/* Tarjeta de actividad (grilla de recetas, encargos, jefes). */
+.tile{position:relative;display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;padding:var(--space-2) var(--space-1) 7px;border:1px solid var(--border);
+  border-radius:var(--radius-md);background:linear-gradient(160deg,#30271c,#221c15);color:var(--text-1);text-align:center;box-shadow:var(--edge-light);
+  transition:border-color var(--dur-fast),background-color var(--dur-fast)}
+.tile strong{font-size:var(--text-sm);font-weight:600;line-height:var(--leading-tight);max-height:2.3em;overflow:hidden}
+.tile strong::first-letter{text-transform:uppercase}
+.tile small{font-size:var(--text-xs);color:var(--green-300)}
+.tile .slot{width:34px;height:34px}
+.tile .ico{width:24px;height:24px}
+.tile:hover{border-color:var(--border-gold);background:linear-gradient(160deg,#3a2f22,#29221a)}
+.tile[aria-pressed=true]{border-color:var(--gold-300);background:linear-gradient(160deg,#54432a,#33291b);box-shadow:var(--edge-light),0 0 0 1px #000,0 0 14px #e2c07f33}
+.tile[data-running]{border-color:var(--green-500)}
+.tile[data-running=true]{background:linear-gradient(160deg,#4a3e25,#2f2719)}
+.tile[data-running] small{color:var(--green-300);font-weight:700}
+.tile[data-running]::before{content:'';position:absolute;inset:-1px;border:2px solid var(--green-500);border-radius:inherit;animation:tile-run 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes tile-run{50%{opacity:.25}}
+.tile-wait small{color:#ffcf9a}
+.tile-locked .slot{filter:grayscale(1) brightness(.55)}
+.tile-locked strong{color:var(--text-2)}
+.tile-locked small{color:var(--text-3)}
+.tile-lock{position:absolute;top:5px;right:6px}
+.tile-lock .ico{width:15px;height:15px}
+
+/* Casillero de objeto. .io envuelve el casillero y la cantidad (<b>). */
+.slot{display:grid;place-items:center;flex:none;width:40px;height:40px;border:1px solid #5f5140;border-radius:var(--radius-sm);line-height:1;
+  background:radial-gradient(ellipse at 50% 35%,#463d31,#1f1b16 76%);box-shadow:inset 0 0 0 1px #0008,inset 0 2px 5px #0009}
+.slot .ico{width:28px;height:28px}
+.slot-big{width:56px;height:56px;border-color:var(--gold-500);border-radius:var(--radius-md)}
+.slot-big .ico{width:40px;height:40px}
+.slot-foe{font-size:24px}
+.slot-big.slot-foe{font-size:36px}
+.slot-foe svg{width:90%;height:90%}
+.io{position:relative;display:inline-grid;padding:0;border:0;background:none;vertical-align:top}
+.io>b{position:absolute;right:-3px;bottom:-4px;min-width:16px;padding:0 4px;border:1px solid var(--gold-700);border-radius:var(--radius-pill);background:#0e0b08;
+  color:var(--gold-200);font-size:var(--text-2xs);font-weight:700;line-height:15px;text-align:center}
+button.io:hover .slot,.io[aria-pressed=true] .slot{border-color:var(--gold-200);box-shadow:inset 0 0 0 1px #000,0 0 0 2px #e2c07f66}
+.io-missing .slot{border-color:#a8432f}
+.io-missing>b{border-color:#a8432f;color:var(--red-300)}
+.io-empty .slot{opacity:.38}
+.io-empty .ico{filter:grayscale(1);opacity:.5}
+span.io-empty:empty{width:40px;height:40px;border:1px dashed var(--border-subtle);border-radius:var(--radius-sm);background:#14110c}
+.io-rare .slot{border-color:var(--rarity-legendary);box-shadow:inset 0 0 0 1px #000,0 0 10px #f0b53c55}
+.item-painted{display:inline-block;border-radius:9%;background:url('art/objetos-ilustrados.webp') var(--item-art-x) var(--item-art-y)/var(--item-atlas-w) var(--item-atlas-h) no-repeat}
+
+/* Barras de progreso: .bar>i (XP, oro) y .bar-hp (vida). */
+.bar{display:block;height:6px;overflow:hidden;border-radius:var(--radius-pill);background:#0c0a07;box-shadow:inset 0 0 0 1px #000,0 1px 0 #ffffff12}
+.bar>i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(180deg,#f3d88a,#b98a2e);box-shadow:inset 0 1px 0 #fff3;transition:width .25s}
+.bar-hp>i{background:linear-gradient(180deg,#f0705c,#b0362a)}
+progress{appearance:none;height:8px;border:1px solid var(--gold-600);border-radius:var(--radius-pill);background:#0c0a07;overflow:hidden}
+progress::-webkit-progress-bar{background:#0c0a07}
+progress::-webkit-progress-value{background:linear-gradient(90deg,#a8692a,#f3c574)}
+progress::-moz-progress-bar{background:linear-gradient(90deg,#a8692a,#f3c574)}
+
+/* Campos. */
+input:not([type=checkbox],[type=radio],[type=range]),select,textarea{min-height:var(--control-sm);padding:0 var(--space-2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface-inset);color:var(--text-1);font-size:var(--text-sm);box-shadow:var(--shadow-inset);transition:border-color var(--dur-fast)}
+input:not([type=checkbox],[type=radio],[type=range]):hover,select:hover,textarea:hover{border-color:var(--border-strong)}
+input:not([type=checkbox],[type=radio],[type=range]):focus-visible,select:focus-visible,textarea:focus-visible{border-color:var(--gold-400);outline:2px solid #cfa46366;outline-offset:0}
+input::placeholder{color:var(--text-3)}
+select{appearance:none;padding-right:26px;cursor:pointer;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cfa463' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") right 6px center/16px no-repeat,var(--surface-inset)}
+select option{background:var(--surface-1);color:var(--text-1)}
+input[type=checkbox]{appearance:none;display:inline-grid;place-items:center;flex:none;width:18px;height:18px;margin:0;border:1px solid var(--border-strong);border-radius:4px;
+  background:var(--surface-inset);box-shadow:var(--shadow-inset);cursor:pointer}
+input[type=checkbox]::after{content:'';width:10px;height:6px;margin-top:-3px;border:solid var(--text-on-gold);border-width:0 0 2px 2px;rotate:-45deg;opacity:0}
+input[type=checkbox]:checked{border-color:var(--gold-300);background:linear-gradient(180deg,var(--gold-200),var(--gold-400))}
+input[type=checkbox]:checked::after{opacity:1}
+input[type=checkbox]:hover{border-color:var(--gold-400)}
+input[type=number]{font-variant-numeric:tabular-nums}
+
+/* Diálogos (personajes, ajustes, mochila llena). */
+dialog.characters{width:min(460px,92vw);max-height:calc(100dvh - 32px);padding:var(--space-5);border:1px solid var(--border-gold);border-radius:var(--radius-lg);
+  background:linear-gradient(170deg,#2c251c,var(--surface-1) 55%);color:var(--ink);box-shadow:var(--edge-light),0 0 0 1px #000,var(--shadow-4)}
+dialog::backdrop{background:#080706cc}
+#pack-full-dialog::backdrop{background:#08070629}
+dialog h2{font:600 var(--text-2xl)/1.2 var(--font-serif);color:var(--gold-200)}
+dialog p{color:var(--text-2);font-size:var(--text-md);line-height:var(--leading)}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3)}
+.section-heading small{display:block;margin-bottom:2px;font-size:var(--text-2xs);font-weight:600;letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--gold-400)}
+.section-heading h2{font:600 var(--text-2xl)/1.15 var(--font-serif);color:var(--gold-200)}
+.settings-dialog{width:min(360px,92vw)}
+.settings-dialog>label{display:flex;align-items:center;gap:var(--space-3);min-height:var(--control-lg);margin:0 0 6px;padding:0 var(--space-3);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);background:var(--surface-inset);font-size:var(--text-base);cursor:pointer;transition:border-color var(--dur-fast)}
+.settings-dialog>label:hover{border-color:var(--border-strong)}
+.settings-dialog>button{width:100%;margin-top:var(--space-2)}
+.bank-note-actions{display:flex;justify-content:flex-end;gap:var(--space-2);margin-top:var(--space-4)}
+
+/* 5 · HUD superior */
+.top{position:relative;z-index:var(--z-hud);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto;grid-template-rows:var(--hud);align-items:center;
+  gap:0 var(--space-3);height:var(--hud);padding:0 var(--space-4);border-bottom:1px solid #000;
+  background:linear-gradient(180deg,#2b2117f0,#17120df7),url('art/cofre-madera.jpg') center 18%/540px auto,var(--surface-1);
+  box-shadow:inset 0 1px 0 #ffe2a51a,inset 0 -2px 0 #6b4f2c66,0 3px 12px #0009}
+/* Filo dorado inferior que se apaga en los extremos. */
+.top::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--gold-600) 12%,var(--gold-400) 50%,var(--gold-600) 88%,transparent)}
+.top .brand{grid-column:1}
+.top .hud-nav{grid-column:2}
+.top .hud-pack{grid-column:3}
+.top .status{grid-column:4}
+.top .player-tools{grid-column:5}
+
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+/* Escudo: borde de oro y campo de cuero, la V en oro. */
+.crest{position:relative;isolation:isolate;display:grid;place-items:center;flex:none;width:32px;height:38px;padding-bottom:5px;
+  clip-path:polygon(0 0,100% 0,100% 64%,50% 100%,0 64%);background:linear-gradient(160deg,#ffe9b4,#c29350 55%,#8a6230);
+  font:700 19px/1 var(--font-serif);color:var(--gold-200);text-shadow:0 1px 0 #000}
+.crest::before{content:'';position:absolute;inset:2px;z-index:-1;clip-path:inherit;background:radial-gradient(circle at 50% 30%,#4a3622,#1e1610 80%)}
+.brand-text{display:grid;gap:3px;min-width:0}
+.brand strong{display:block;font:700 19px/1 var(--font-serif);letter-spacing:.01em;white-space:nowrap;color:var(--gold-200);text-shadow:0 1px 0 #000,0 0 12px #e2c07f26}
+.brand small{display:block;font-size:var(--text-2xs);font-weight:600;line-height:1;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;color:var(--text-3)}
+
+/* Navegación principal: íconos solos; con pantallas anchas se ven los nombres. */
+.hud-nav.tabs{padding:3px}
+.hud-nav.tabs button{width:36px;min-height:34px;padding:0}
+.hud-nav.tabs button .ico{width:22px;height:22px}
+.hud-nav.tabs button span{display:none}
+
+/* Mochila: 14 casilleros por fila, con la otra fila a un toque. */
+.hud-pack{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;align-items:center;gap:var(--space-2);justify-self:center;
+  width:min(100%,calc(var(--pack-size) * 14 + 39px + 110px));min-width:0;height:42px;padding:3px var(--space-1) 3px 10px;
+  border:1px solid var(--border);border-radius:var(--radius-md);background:#0d0b08b3;box-shadow:var(--shadow-inset),0 1px 0 #ffe7b512}
+.pack-label{display:grid;gap:3px;justify-items:start;line-height:1}
+.pack-label small{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+#pack-count{font-size:var(--text-md);font-weight:700;color:var(--gold-200);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pack-row{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:3px;min-width:0}
+.pack-row .io,.pack-row .io-empty:empty{width:100%;max-width:var(--pack-size);height:auto;min-width:0;aspect-ratio:1;padding:0;overflow:hidden;border-radius:var(--radius-xs)}
+.pack-row .slot{width:100%;height:100%;border:1px solid #5a4c3a;border-radius:var(--radius-xs);box-shadow:inset 0 1px 0 #ffe7b51a,inset 0 -2px 4px #0007}
+.pack-row .ico{width:78%;height:78%}
+.pack-row .io:hover .slot,.pack-row .io[aria-pressed=true] .slot{border-color:var(--gold-200);box-shadow:inset 0 0 0 1px #e2c07f88}
+.pack-row .io b{right:1px;bottom:1px;min-width:0;max-width:100%;padding:0 3px;border:0;background:#000000b3;font-size:9px;line-height:12px;overflow:hidden;text-overflow:clip}
+.pack-row .io-empty:empty{border:1px solid #3a3025;background:#1a150fd9;box-shadow:inset 0 2px 4px #0008}
+.pack-nav{display:grid;gap:2px}
+.pack-nav button{display:grid;place-items:center;width:var(--control-sm);height:17px;padding:0;border:1px solid var(--border);border-radius:4px;
+  background:linear-gradient(180deg,#342b20,#231c15);color:var(--gold-200)}
+.pack-nav button .ico-ui{width:16px;height:16px;stroke-width:2.5}
+.pack-nav button:hover:not(:disabled){border-color:var(--gold-400);color:var(--gold-100)}
+.pack-nav button:disabled{opacity:.3;cursor:default}
+
+/* Vida, combate y monedas. */
+.status{display:flex;align-items:center;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:7px;height:var(--control-md);padding:0 var(--space-3) 0 9px;border:1px solid var(--border);border-radius:var(--radius-md);
+  background:linear-gradient(180deg,#1a1510,#120f0b);color:var(--text-1);font-size:var(--text-base);font-weight:700;white-space:nowrap;box-shadow:var(--shadow-inset),0 1px 0 #ffe7b512}
+.pill .ico{width:20px;height:20px}
+.pill-coins b{color:var(--gold-200)}
+.pill-hp{padding-right:9px}
+.pill-bar{position:relative;display:grid;place-items:center;min-width:84px;height:20px;overflow:hidden;border-radius:var(--radius-xs);background:#3a1410;box-shadow:inset 0 0 0 1px #000,inset 0 2px 3px #0008}
+.pill-bar u{position:absolute;inset:0 auto 0 0;background:linear-gradient(180deg,#ec6a52,#a83224);box-shadow:inset 0 1px 0 #ffffff40;transition:width .25s}
+.pill-bar b{position:relative;font-size:var(--text-sm);font-weight:700;color:#fff;text-shadow:0 1px 2px #000}
+
+/* Jugador y botones de ajustes. */
+.player-tools{display:flex;align-items:center;gap:6px}
+.player-button{display:inline-flex;align-items:center;gap:var(--space-2);max-width:180px;height:var(--control-md);padding:0 var(--space-3) 0 3px;border:1px solid var(--border-gold);
+  border-radius:var(--radius-md);background:linear-gradient(180deg,#3a2f22,#251e16);color:var(--gold-200);box-shadow:var(--edge-light),var(--shadow-1);
+  transition:border-color var(--dur-fast),filter var(--dur-fast)}
+.player-button:hover{border-color:var(--gold-300);filter:brightness(1.12)}
+.player-button:active{filter:brightness(.92)}
+.player-button strong{overflow:hidden;font:600 15px/1 var(--font-serif);text-overflow:ellipsis;white-space:nowrap}
+.hud-portrait{display:block;flex:none;width:28px;height:28px;overflow:hidden;border:1px solid var(--gold-500);border-radius:var(--radius-sm);background:#26251f}
+.hud-portrait img,.hud-portrait svg{display:block;width:100%;height:100%;object-fit:cover}
+.halt-button{border-color:#9b4a38;background:linear-gradient(180deg,#4f241c,#341712);color:var(--red-300)}
+.halt-button:hover{border-color:var(--red-500);background:linear-gradient(180deg,#632c22,#401c15);color:#ffd9cf}
+.halt-button .ico-ui{width:18px;height:18px}
+/* Pantalla completa: el ícono cambia según el estado, sin JS. */
+#fullscreen .when-fullscreen,:root:fullscreen #fullscreen .when-windowed{display:none}
+:root:fullscreen #fullscreen .when-fullscreen{display:block}
+.boost-hud{position:absolute;right:var(--space-4);top:calc(100% + 6px);z-index:11;display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 var(--space-2);
+  border:1px solid var(--gold-400);border-radius:var(--radius-pill);background:#292316;color:var(--gold-200);font-size:var(--text-xs);font-weight:700;
+  font-variant-numeric:tabular-nums;pointer-events:none;box-shadow:var(--shadow-2)}
+
+/* 6 · Mapa */
+.layout{position:relative}
+.workspace{position:relative;height:calc(100dvh - var(--hud));min-height:320px;overflow:hidden;user-select:none}
+.workspace input,.workspace textarea{user-select:text}
+.field,.world{position:absolute;inset:0}
+.world{overflow:hidden;isolation:isolate;background:#20251a}
+.world::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 85px 12px #0e100da0}
+.map-scene{position:absolute;inset:0;background:#161b15;right:auto;bottom:auto}
+.map-scene>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.floating{position:absolute;inset:0;pointer-events:none;z-index:5}
+.valley-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+
+.prop{scale:var(--actor-scale,1);transform-origin:50% 80%}
+.map-ambience{position:absolute;inset:0;pointer-events:none}
+.valley-motion,.valley-fire{position:absolute;display:block}
+.valley-fire img,.valley-fire i{position:absolute;display:block}
+.valley-fire img{width:100%;height:100%;transform-origin:50% 86%;animation:valley-fire 1.12s ease-in-out infinite;animation-delay:var(--phase)}
+.valley-fire .fire-light{width:210%;height:144%;left:-55%;top:6%;animation:valley-light 1.12s ease-in-out infinite;animation-delay:var(--phase);background:radial-gradient(ellipse,#ffae555f,transparent 69%)}
+.valley-fire .fire-ember{width:2px;height:2px;left:53%;top:60%;border-radius:50%;background:#ffc472;box-shadow:4px -5px #ef9134;animation:valley-ember 2.7s ease-out infinite;animation-delay:var(--phase)}
+@keyframes valley-fire{
+  0%,100% {transform:scale(.95,.8) skewX(5deg);opacity:.67}
+  24% {transform:scale(1,.98) skewX(-6deg);opacity:.87}
+  51% {transform:scale(.86,1.13) skewX(10deg);opacity:.71}
+  74% {transform:scale(1.05,.93) skewX(-3deg);opacity:.92}
+}
+@keyframes valley-light{0%,100%{opacity:.46}29%,76%{opacity:.78}54%{opacity:.6}}
+@keyframes valley-ember{0%,22%{opacity:0}40%{opacity:.8}85%,100%{opacity:0;transform:translate(7px,-20px)}}
+.still-landscape .map-ambience{display:none}
+.valley-chimney{position:absolute}
+.valley-chimney img{position:absolute;inset:0;width:100%;height:100%;transform-origin:48% 94%;animation:chimney-draft 5s linear infinite}
+.valley-chimney img + img{animation-delay:-2.5s}
+@keyframes chimney-draft{
+  0% {transform:translate(0,2%) scale(.67);opacity:0}
+  16% {opacity:.80}
+  40% {transform:translate(15%,-37%) scale(.97);opacity:.88}
+  72% {transform:translate(35%,-71%) scale(1.23);opacity:.50}
+  100% {transform:translate(66%,-98%) scale(1.45);opacity:0}
+}
+@keyframes valley-smoke{
+  0%{transform:translate(-3px,7px) scale(.9);opacity:0}
+  30%{opacity:.75}
+  75%{opacity:.28}
+  100%{transform:translate(12px,-12px) scale(1.28);opacity:0}
+}
+.tool-debris{opacity:0;animation:valley-chips var(--work-cycle,1.8s) ease-out infinite}
+.prop[data-kind=mine],.prop[data-kind=smith],.prop[data-kind=cook]{width:69px;transform:translate(calc(-50% + var(--dx)),calc(-94% + var(--dy)));animation:none}
+.prop[data-kind=cook]{width:63px}
+.work-prop-sprite{position:relative;display:block;width:100%;height:auto}
+.prop .work-prop-effect{position:absolute;inset:0;width:100%;height:100%}
+.work-stove-fire{position:absolute;left:31%;bottom:13%;width:42%;height:42%;transform-origin:50% 86%;animation:valley-fire 1.12s ease-in-out infinite}
+.work-stove-smoke{position:absolute;left:31%;bottom:62%;width:44%;height:auto;animation:valley-smoke 2.6s ease-out infinite}
+
+@keyframes boost-aura{from{opacity:.65;transform:scale(.95)}to{opacity:1;transform:scale(1.27)}}
+.valley-motion.water{animation:valley-current 5.2s linear infinite;animation-delay:var(--phase)}
+@keyframes valley-current{
+  0% {transform:translate(23px, -7px);opacity:0}
+  22% {opacity:.92}
+  72% {opacity:.88}
+  100% {transform:translate(-40px,11px);opacity:0}
+}
+.map-life{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
+.map-life[hidden]{display:none}
+.living-map .valley-motion,.living-map .valley-chimney{display:none}
+.map-critters{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.map-critters[hidden]{display:none}
+.critter{position:absolute;display:block}
+.critter svg{display:block;width:100%;height:100%;overflow:visible}
+.bird path{fill:none;stroke:#1d1a16;stroke-width:2.2;stroke-linecap:round;animation:bird-flap var(--flap,.33s) ease-in-out infinite alternate;transform-origin:50% 60%}
+@keyframes bird-flap{from{transform:scaleY(1)}to{transform:scaleY(-.55)}}
+.fish{width:1.1%;height:.9%}
+.fish path{fill:#c9d7d4;stroke:#2c3d42;stroke-width:.6}
+.ripple{width:2.4%;height:1.2%;border:2px solid #e3f3f2c8;border-radius:50%}
+
+/* 7 · Objetivo (misión sobre el mapa): ver ui/mapa-ui.css */
+/* 8 · Avisos, botín, subidas de nivel y resultado de pelea: ver ui/mapa-ui.css */
+/* 9 · Panel lateral: el de actividades vive en ui/actividades.css; acá queda lo del mercado. */
+.workspace-main{position:absolute;z-index:6;right:8px;top:8px;bottom:8px;width:var(--station-width);overflow:auto;scrollbar-width:thin;scrollbar-color:#5d4b2c transparent;padding:8px}
+.st-head{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:8px;border-radius:var(--radius-md);border:1px solid var(--line);min-height:68px;background:linear-gradient(90deg,#211d16f2,#241e16a8),var(--panel-art,url("art/valle/color.webp"));background-size:100%,200%;background-position:center,var(--art-pos,50% 40%);border-color:#766348;box-shadow:inset 0 1px #f2d09526}
+.st-icon{display:grid;place-items:center;width:44px;height:44px;flex:none;border:1px solid var(--gold);box-shadow:0 0 0 2px #000,0 2px 6px #000a;border-radius:5px;background:#211d16;border-color:#9a7e54}
+.st-icon .ico{width:30px;height:30px}
+.st-title{flex:1;min-width:0}
+.st-title small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.st-title h1{font:700 21px/1.1 var(--serif);color:var(--gold-hi);overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 0 #000;white-space:normal;font-size:19px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#panel-skills[data-zone=forest]{--art-pos:8% 14%}
+#panel-skills[data-zone=arena]{--art-pos:49% 15%}
+#panel-skills[data-zone=mine]{--art-pos:100% 18%}
+#panel-skills[data-zone=market]{--art-pos:8% 56%}
+#panel-skills[data-zone=camp],#panel-bag{--art-pos:52% 52%}
+#panel-skills[data-zone=forge]{--art-pos:93% 51%}
+#panel-skills[data-zone=shrine],#panel-collection{--art-pos:36% 77%}
+#panel-skills[data-zone=docks]{--art-pos:92% 84%}
+#panel-bank{--art-pos:37% 53%;container-type:inline-size}
+#panel-route{--art-pos:50% 29%}
+#panel-log{--art-pos:30% 63%}
+
+.home-tabs,#panel-skills[data-zone=camp] #activity-group{margin-bottom:8px}
+#panel-bag.at-home .st-head,#panel-bank .st-head,#panel-skills[data-zone=camp] .st-head{--art-pos:52% 52%}
+.workspace-main.frame{border-color:#876945;background:linear-gradient(145deg,#2d261d,#201c16 55%)}
+#workspace-main[data-screen=bank]{background:transparent;border-color:#a17c4d;box-shadow:inset 0 0 0 1px #21120b,inset 0 0 0 2px #a17c4d40,0 5px 18px #100a06a0}
+.st-head:not(.bank-head){border-color:#8e7049}
+.station-back{display:block;max-width:100%;min-height:var(--control-sm);margin:0 0 var(--space-2);padding:0 var(--space-3) 0 10px;overflow:hidden;border:1px solid var(--border-strong);border-radius:var(--radius-sm);
+  background:linear-gradient(180deg,#342b20,#261f17);color:var(--text-1);font-size:var(--text-sm);font-weight:600;text-align:left;text-overflow:ellipsis;white-space:nowrap;box-shadow:var(--edge-light)}
+.station-back:hover{border-color:var(--gold-400);color:var(--gold-100)}
+
+/* 10 · Personaje (la hoja vive en ui/personaje.css; acá quedan las raciones que comparte la arena) */
+.grid-rations,.supplies-food{flex-wrap:wrap}
+.supplies-food small{font-size:10px;color:var(--muted)}
+.ration-slot{position:relative;display:inline-flex}
+.ration-remove{position:absolute;top:-3px;right:-3px;width:15px;height:15px;line-height:1;padding:0;background:#422e21;color:#ffdfad;border:1px solid #9a6e45;border-radius:4px}
+
+/* 11 · Colección y diario: en ui/personaje.css */
+
+/* 12 · Diálogo de personajes y apariencia: en ui/personaje.css */
+
+/* 13 · Escena: personaje, rival y efectos sobre el mapa */
+
+@keyframes orb{0%,100%{scale:.800;opacity:.750}50%{scale:1.250;opacity:1}}
+
+@keyframes zz{0%{opacity:0;translate:0 4px}40%{opacity:1}100%{opacity:0;translate:5px -8px}}
+
+.prop{position:absolute;z-index:3;width:46px;pointer-events:none;transform:translate(calc(-50% + var(--dx,28px)),calc(-78% + var(--dy,0px)))}
+.prop svg{display:block;width:100%;overflow:visible}
+.prop[data-kind=fish]{width:38px}
+.prop[data-kind=rune],.prop[data-kind=pray]{width:62px;z-index:2}
+.prop[data-kind=mine]{animation:prop-hit .600s linear infinite}
+.prop-bob{animation:prop-bob 1.600s ease-in-out infinite}
+.prop-ripple{transform-origin:center;animation:prop-ripple 1.600s ease-out infinite}
+.prop-glow{animation:orb .600s ease-in-out infinite}
+.prop-spin{transform-origin:center;animation:prop-spin 5s linear infinite}
+@keyframes prop-hit{0%,40%,70%,100%{translate:0 0}50%{translate:1.500px -1px}58%{translate:-1px 0}}
+@keyframes prop-sway{0%,40%,100%{rotate:0deg}55%{rotate:3.500deg}70%{rotate:-2deg}}
+@keyframes prop-bob{0%,100%{translate:0 0}50%{translate:0 2px}}
+@keyframes prop-ripple{0%{scale:.500;opacity:.900}100%{scale:1.150;opacity:0}}
+@keyframes prop-flame{from{scale:1 .850}to{scale:1 1.150}}
+@keyframes prop-steam{0%{opacity:0;translate:0 3px}40%{opacity:.900}100%{opacity:0;translate:0 -6px}}
+@keyframes prop-spin{to{rotate:360deg}}
+
+.xp-float{position:absolute;display:flex;align-items:center;font-weight:800;z-index:8;border-radius:3px;animation:penumbra-xp 1.35s ease-out forwards;gap:4px;background:none;padding:0;color:#fff0c3;font-size:16px;text-shadow:0 2px #100b06,1px 0 #100b06,-1px 0 #100b06,0 -1px #100b06;transform:translate(-50%,calc(-108px - var(--xp-row,0) * 20px));white-space:nowrap}
+@keyframes rise{from{opacity:1}to{opacity:0;translate:0 -26px}}
+.shiny{position:absolute;z-index:6;transform:translate(-50%,-50%);border:0;border-radius:50%;font-size:22px;animation:shiny 1s ease-in-out infinite;width:55px;height:55px;background:#eb9a3444;box-shadow:0 0 5px #fff0aa,0 0 19px 6px #fb9c45aa;display:grid;place-items:center}
+@keyframes shiny{0%,100%{scale:.900;rotate:-8deg}50%{scale:1.180;rotate:8deg}}
+.level-burst{position:absolute;font-weight:900;color:#ffde8d;text-shadow:0 0 8px #ffad42;white-space:nowrap;animation:level-burst 1.250s both}
+@keyframes level-burst{0%{opacity:0;transform:translate(-50%,-10px) scale(.500)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,-55px) scale(1.700)}}
+.level-burst.firework::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;background:#fff4c2;box-shadow:0 -29px #ffd683,18px -21px #b4dff4,28px -3px #ffe4a1,20px 17px #eea870,0 26px #aad3a4,-18px 17px #f8d3a1,-29px 1px #f3a969,-19px -21px #a2d1ed;animation:firework-spread 1.200s ease-out both}
+@keyframes firework-spread{from{opacity:1;transform:scale(.200)}to{opacity:0;transform:scale(2)}}
+
+@keyframes penumbra-xp{0%{opacity:0;translate:0 4px}14%,65%{opacity:1}100%{opacity:0;translate:0 -30px}}
+
+.shiny svg{width:44px;height:44px;filter:drop-shadow(0 0 4px #ffe498)}
+
+.xp-float small{font-size:10px}
+.xp-float .ico{width:17px;height:17px}
+.food-heal{color:#c8dea1!important}
+
+.prop[data-kind=mine],.prop[data-kind=smith]{animation-duration:var(--work-cycle,1.8s)}
+.prop[data-kind=smith] .prop-glow{animation:valley-metal var(--work-cycle,1.8s) ease-in-out infinite}
+.prop[data-kind=chop]{width:88px;transform:translate(calc(-50% + var(--dx)),calc(-94% + var(--dy)))}
+.tree-crown{display:block;width:100%;height:auto;transform-origin:50% 94%;animation:valley-cut var(--work-cycle,1.8s) ease-in-out infinite}
+.tree-shadow{position:absolute;left:31%;bottom:3%;width:40%;height:8%;border-radius:50%;background:radial-gradient(ellipse,#1c1c13a6,transparent 73%)}
+.prop .tree-chips{position:absolute;left:26%;bottom:12%;width:34px;opacity:0;animation:valley-chips var(--work-cycle,1.8s) ease-out infinite}
+.prop[data-kind=fish] .prop-bob,.prop[data-kind=fish] .prop-ripple{animation-duration:var(--work-cycle,2s)}
+
+@keyframes valley-cut{
+  0%,48%,100%{transform:rotate(0)}
+  55%{transform:rotate(3deg)}
+  64%{transform:rotate(-1.6deg)}
+  74%{transform:rotate(.8deg)}
+}
+@keyframes valley-chips{
+  0%,50%{opacity:0;transform:translate(4px,5px)}
+  56%{opacity:1}
+  74%,100%{opacity:0;transform:translate(-12px,-9px) rotate(-13deg)}
+}
+@keyframes valley-metal{0%,48%,100%{opacity:.34}55%{opacity:1;transform:translateY(-2px)}65%{opacity:.62}}
+@media(prefers-reduced-motion:reduce){
+  .map-ambience {display:none}
+  .bank-backdrop::before {transform:none}
+}
+
+/* 14 · Cofre del Hogar */
+#panel-bank .bank-head{border-color:#967044;position:relative;isolation:isolate;border:1px solid #bc8d4d;border-radius:7px;background:linear-gradient(90deg,#25160d 2%,#25160de8 24%,transparent 59%), url("art/cofre-cabecera-ilustrada.webp") right center/auto 100% no-repeat,#25160d;box-shadow:inset 0 0 0 2px #170e08,inset 0 1px #e8b670a0,0 2px 5px #0c0806aa}
+.bank-head .bank-emblem{object-fit:cover;border-color:#b98b45}
+.bank-head h1{font-family:var(--font-serif);color:#ffe6ac}
+.bank-meter{display:flex;align-items:center;gap:6px;margin-top:4px}
+.bank-meter b{background:#22160ce8;border:1px solid #8c663a;border-radius:4px;padding:0 5px;color:#fff3da;font:700 12px/16px var(--serif);white-space:nowrap}
+.bank-meter progress{appearance:none;width:82px;height:8px;border:1px solid #9b7039;border-radius:6px;background:#21160e;overflow:hidden}
+.bank-meter progress::-webkit-progress-bar{background:#21160e}
+.bank-meter progress::-webkit-progress-value{background:linear-gradient(90deg,#aa5d21,#ffc86f)}
+.bank-meter progress::-moz-progress-bar{background:linear-gradient(90deg,#aa5d21,#ffc86f)}
+.bank-head::after{content:"";position:absolute;z-index:1;pointer-events:none;top:calc(100% - 1px);right:var(--mantel-right,57px);width:var(--mantel-width,46px);height:var(--mantel-height,27px);background:url("art/cofre-mantel.png") center top/100% 100% no-repeat}
+#panel-bank .bank-initial{font-family:var(--font-serif);font-size:1.17em;line-height:.8;font-weight:800;display:inline-block;width:.90em;height:1.03em;vertical-align:-.12em;background:url("art/cofre-iniciales.png") left center/200% 100% no-repeat;color:transparent;text-shadow:none}
+@container (max-width:325px){
+  #panel-bank .bank-head {background-position:center,right -34px center}
+  .bank-head::after {right:calc(var(--mantel-right,57px) - 34px)}
+}
+#panel-bank .bank-initial + .bank-initial{background-position:right center}
+@media(forced-colors:active){
+  #panel-bank .bank-initial {display:inline;width:auto;height:auto;vertical-align:baseline;background:none;color:CanvasText}
+}
+.bank-backdrop::after{content:"";position:absolute;inset:0;border-radius:5px;pointer-events:none;background:radial-gradient(circle at 4px 4px,#d6ae6b 0 1px,#5b3c22 1.5px 2.3px,transparent 2.7px) left top, radial-gradient(circle at 6px 4px,#d6ae6b 0 1px,#5b3c22 1.5px 2.3px,transparent 2.7px) right top, radial-gradient(circle at 4px 6px,#d6ae6b 0 1px,#5b3c22 1.5px 2.3px,transparent 2.7px) left bottom, radial-gradient(circle at 6px 6px,#d6ae6b 0 1px,#5b3c22 1.5px 2.3px,transparent 2.7px) right bottom;background-size:10px 10px;background-repeat:no-repeat}
+.bank-backdrop{display:none;position:absolute;z-index:5;top:8px;right:8px;bottom:8px;width:var(--station-width);overflow:hidden;border-radius:5px;background:#2b1a10;pointer-events:none}
+.workspace[data-view=bank] .bank-backdrop{display:block}
+.bank-backdrop::before{content:"";position:absolute;inset:0 0 -9%;background:linear-gradient(#21150e32,#21150e68),url("art/cofre-madera.jpg") center/100% 100% no-repeat;transform:translateY(var(--bank-drift,0%))}
+@media(max-width:760px){
+  .bank-backdrop {top:calc(var(--map-height) + 4px);left:5px;right:5px;bottom:5px;width:auto}
+}
+
+/* 15 · Responsive y movimiento reducido */
+/* HUD: en pantallas anchas la navegación muestra sus nombres. */
+@media(min-width:1800px){
+  .hud-nav.tabs button{width:auto;padding:0 var(--space-3) 0 var(--space-2)}
+  .hud-nav.tabs button span{display:inline}
+}
+/* Escritorio chico (1366): se esconden el lema y el nombre del jugador para que la mochila no se achique. */
+@media(max-width:1500px){
+  .top{gap:0 10px;padding:0 var(--space-3)}
+  .brand small{display:none}
+  .player-button{padding-right:3px}
+  .player-button strong{display:none}
+}
+/* Tableta: el HUD pasa a dos filas (marca, estado y botones arriba; navegación y mochila abajo). */
+@media(max-width:1080px){
+  :root{--hud:100px;--pack-size:26px}
+  .top{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:50px 44px;align-content:center;gap:0 var(--space-2);padding:0 10px 4px}
+  .top .brand{grid-column:1;grid-row:1}
+  .top .status{grid-column:2;grid-row:1;justify-self:end}
+  .top .player-tools{grid-column:3;grid-row:1}
+  .top .hud-nav{grid-column:1;grid-row:2;justify-self:start}
+  .top .hud-pack{grid-column:2/-1;grid-row:2;justify-self:start}
+}
+@media(max-width:760px){
+  :root{--hud:96px;--pack-size:22px}
+  .top{grid-template-rows:48px 42px;padding:0 6px 4px}
+  .brand .crest{display:none}
+  .brand strong{font-size:15px}
+  .status{gap:3px}
+  .pill{height:30px;padding:0 7px 0 5px;gap:4px;font-size:var(--text-sm)}
+  .pill .ico{width:16px;height:16px}
+  .pill-bar{min-width:50px;height:18px}
+  .status .pill:nth-child(2){display:none}
+  .player-tools{gap:3px}
+  .icon-button,.player-button{height:32px}
+  .icon-button{width:32px}
+  .hud-nav.tabs button{width:30px;min-height:30px}
+  .hud-nav.tabs button .ico{width:18px;height:18px}
+  .hud-pack{height:40px;gap:5px;padding-left:6px}
+  .pack-label small{display:none}
+  .pack-row{gap:2px}
+  .pack-row .io b{font-size:7px}
+  .quest{top:auto;bottom:16px;left:7px;width:min(200px,calc(100vw - 12px));max-height:34%;padding:6px}
+  .quest-hint{display:none}
+  .workspace{--map-height:clamp(230px,48%,375px)}
+  .field{bottom:auto;height:var(--map-height)}
+  .workspace-main{top:calc(var(--map-height) + 4px);left:5px;right:5px;bottom:5px;width:auto}
+  .marker{padding:3px 8px 3px 4px;font-size:10px}
+  .marker-icon{width:17px;height:17px}
+  .marker-icon .ico{width:14px;height:14px}
+  .marker-label{max-width:65px;white-space:normal;text-align:center}
+  .loot-feed{bottom:5px;right:8px;max-width:65%}
+  .run-line small,#run-session{display:none}
+  .run-strip{overflow:hidden}
+  .st-title small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .st-head{min-height:56px}
+}
+@media(max-width:480px){
+  /* Celular: la mochila ocupa su propia fila y la navegación baja a una tercera. */
+  :root{--hud:136px;--pack-size:22px}
+  .top{grid-template-rows:48px 42px 38px}
+  .top .hud-pack{grid-column:1/-1;grid-row:2;width:100%;padding-left:8px}
+  .top .hud-nav{grid-column:1/-1;grid-row:3;justify-self:stretch;justify-content:space-around}
+  .hud-nav.tabs button{flex:1}
+  .brand-text{display:none}
+  .pill{padding-inline:5px}
+  .pill-bar{min-width:42px}
+  .icon-button{width:28px;height:28px}
+  .player-button{height:28px;padding:0 2px}
+  .hud-portrait{width:28px;height:28px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* ─── Personajes del mapa: héroe, rivales, mascota y golpes ───────────────────
+   El arte es SVG generado en scene.js; acá solo se anima transform y opacity de grupos chicos.
+   Los orígenes de giro están en unidades del lienzo del héroe (64 × 76) y del rival (96 × 88). */
+@font-face{font-family:"Valle Golpe";src:url(data:font/woff;base64,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) format("woff");font-display:block}
+.hero,.map-pet{position:absolute;left:0;top:0;pointer-events:none;
+  translate:calc(var(--map-width,0px) * var(--actor-x,0)) calc(var(--map-height,0px) * var(--actor-y,0))}
+.hero{z-index:4;width:50px;height:59px;transform:translate(-50%,-95%);transform-origin:50% 95%;scale:var(--actor-scale,1)}
+.hero-art{position:absolute;inset:0;scale:var(--face,1) 1}
+.hero-art svg{display:block;width:100%;height:100%;overflow:visible}
+.hero-tool{display:none}
+.hero-art g{transform-box:view-box}
+.hero .hero-body{transform-origin:32px 56px;animation:hero-breathe 2.6s ease-in-out infinite}
+.hero .hero-work-arm{transform-origin:39.5px 30.5px;animation:hero-arm-idle 2.6s ease-in-out infinite}
+.hero .hero-rear-arm{transform-origin:24.5px 30.5px;animation:hero-arm-idle 2.6s ease-in-out -1.3s infinite}
+.hero .hero-leg-a{transform-origin:28px 50px}
+.hero .hero-leg-b{transform-origin:36.6px 50px}
+.hero .hero-cape{transform-origin:32px 29px;animation:hero-cape 2.6s ease-in-out infinite}
+.hero .hero-plume{transform-origin:30px 7px;animation:hero-plume 2.6s ease-in-out -.5s infinite}
+@keyframes hero-breathe{0%,100%{transform:none}50%{transform:translateY(.7px) scale(1.01,.985)}}
+@keyframes hero-arm-idle{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+@keyframes hero-cape{0%,100%{transform:skewX(0)}50%{transform:skewX(3deg)}}
+@keyframes hero-plume{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}
+/* Caminar: piernas opuestas, brazos contrarios a la pierna del mismo lado, rebote en cada paso y capa al viento. */
+.hero.walking .hero-leg-a{animation:hero-step .52s ease-in-out infinite}
+.hero.walking .hero-leg-b{animation:hero-step .52s ease-in-out -.26s infinite}
+.hero.walking .hero-body{animation:hero-bob .26s ease-in-out infinite}
+.hero.walking .hero-work-arm{animation:hero-arm-swing .52s ease-in-out infinite}
+.hero.walking .hero-rear-arm{animation:hero-arm-swing .52s ease-in-out -.26s infinite}
+.hero.walking .hero-cape{animation:hero-cape-wind .52s ease-in-out infinite}
+.hero.walking .hero-plume{animation:hero-plume .26s ease-in-out infinite}
+@keyframes hero-step{0%,100%{transform:rotate(24deg)}50%{transform:rotate(-24deg)}}
+@keyframes hero-bob{0%,100%{transform:translateY(.5px) rotate(3deg)}50%{transform:translateY(-1.6px) rotate(3deg)}}
+@keyframes hero-arm-swing{0%,100%{transform:rotate(16deg)}50%{transform:rotate(-16deg)}}
+@keyframes hero-cape-wind{0%,100%{transform:skewX(9deg) rotate(4deg)}50%{transform:skewX(14deg) rotate(6deg)}}
+/* Trabajo: anticipación lenta, golpe rápido en el 55 % (cuando salta la astilla o la chispa) y asentamiento. */
+.hero[data-kind] .hero-leg-a{transform:rotate(7deg)}
+.hero[data-kind] .hero-leg-b{transform:rotate(-7deg)}
+.hero[data-kind=mine] .hero-work-arm,.hero[data-kind=chop] .hero-work-arm{animation:hero-swing var(--work-cycle,1.8s) infinite}
+.hero[data-kind=smith] .hero-work-arm{animation:hero-hammer var(--work-cycle,1.8s) infinite}
+.hero[data-kind=mine] .hero-body,.hero[data-kind=chop] .hero-body,.hero[data-kind=smith] .hero-body{animation:hero-heave var(--work-cycle,1.8s) infinite}
+.hero[data-kind=mine] .hero-rear-arm,.hero[data-kind=chop] .hero-rear-arm,.hero[data-kind=smith] .hero-rear-arm{animation:hero-brace var(--work-cycle,1.8s) ease-in-out infinite}
+@keyframes hero-swing{
+  0%{transform:rotate(-45deg);animation-timing-function:ease-in-out}
+  28%{transform:rotate(-52deg);animation-timing-function:cubic-bezier(.3,0,.3,1)}
+  46%{transform:rotate(-196deg);animation-timing-function:ease-out}
+  50%{transform:rotate(-204deg);animation-timing-function:cubic-bezier(.7,0,1,.6)}
+  55%{transform:rotate(-24deg);animation-timing-function:ease-out}
+  59%{transform:rotate(-38deg);animation-timing-function:ease-in-out}
+  68%,100%{transform:rotate(-45deg)}
+}
+@keyframes hero-hammer{
+  0%{transform:rotate(-40deg);animation-timing-function:ease-in-out}
+  30%{transform:rotate(-44deg);animation-timing-function:cubic-bezier(.3,0,.3,1)}
+  46%{transform:rotate(-140deg);animation-timing-function:ease-out}
+  50%{transform:rotate(-146deg);animation-timing-function:cubic-bezier(.7,0,1,.6)}
+  55%{transform:rotate(-24deg);animation-timing-function:ease-out}
+  60%{transform:rotate(-36deg)}
+  70%,100%{transform:rotate(-40deg)}
+}
+@keyframes hero-heave{
+  0%,28%,100%{transform:none}
+  48%{transform:translate(-.8px,-.6px) rotate(-5deg)}
+  55%{transform:translate(.8px,.8px) rotate(7deg)}
+  64%{transform:translate(.4px,.4px) rotate(4deg)}
+}
+@keyframes hero-brace{0%,28%,100%{transform:rotate(-24deg)}48%{transform:rotate(-46deg)}55%{transform:rotate(-58deg)}68%{transform:rotate(-30deg)}}
+.hero[data-kind=cook] .hero-work-arm{animation:hero-stir calc(var(--work-cycle,1.8s) / 2) ease-in-out infinite}
+@keyframes hero-stir{0%,100%{transform:rotate(-26deg)}50%{transform:translate(.8px,-.8px) rotate(-42deg)}}
+.hero[data-kind=fletch] .hero-work-arm{animation:hero-carve calc(var(--work-cycle,1.8s) / 2) ease-in-out infinite}
+.hero[data-kind=fletch] .hero-rear-arm{transform:rotate(-46deg);animation:none}
+@keyframes hero-carve{0%,100%{transform:rotate(-34deg)}55%{transform:rotate(-50deg)}70%{transform:rotate(-46deg)}}
+.hero[data-kind=fish] .hero-work-arm{animation:hero-cast var(--work-cycle,2s) infinite}
+@keyframes hero-cast{
+  0%{transform:rotate(-50deg);animation-timing-function:ease-in-out}
+  16%{transform:rotate(-96deg);animation-timing-function:ease-out}
+  24%{transform:rotate(-112deg);animation-timing-function:cubic-bezier(.7,0,1,.7)}
+  31%{transform:rotate(-36deg);animation-timing-function:ease-out}
+  38%{transform:rotate(-48deg);animation-timing-function:ease-in-out}
+  60%{transform:rotate(-44deg)}
+  80%{transform:rotate(-48deg)}
+  100%{transform:rotate(-50deg)}
+}
+.hero[data-kind=pray] .hero-work-arm{transform:rotate(-74deg);animation:none}
+.hero[data-kind=pray] .hero-rear-arm{transform:rotate(-66deg);animation:none}
+.hero[data-kind=pray] .hero-body{animation:hero-pray-bow 2.4s ease-in-out infinite}
+.hero[data-kind=pray] .hero-art{animation:hero-pray-glow 2.4s ease-in-out infinite}
+@keyframes hero-pray-bow{0%,100%{transform:rotate(3deg)}50%{transform:translateY(.6px) rotate(6deg)}}
+@keyframes hero-pray-glow{0%,100%{filter:drop-shadow(0 0 1px #ffe7a380)}50%{filter:drop-shadow(0 0 6px #ffe7a3)}}
+.hero[data-kind=rune] .hero-work-arm{animation:hero-channel 1.6s ease-in-out infinite}
+@keyframes hero-channel{0%,100%{transform:rotate(-48deg)}50%{transform:rotate(-58deg)}}
+.hero .hero-orb{transform-origin:0 -24.6px;transform-box:view-box}
+.hero[data-kind=rune] .hero-orb,.hero[data-kind=fight-magic] .hero-orb{animation:hero-orb 1.2s ease-in-out infinite}
+@keyframes hero-orb{0%,100%{opacity:.85}50%{opacity:1}}
+/* Guardias de combate: la animación del golpe la hace sceneStrike con la API de animaciones. */
+.hero[data-kind=fight-melee] .hero-work-arm{transform:rotate(-38deg);animation:none}
+.hero[data-kind=fight-melee] .hero-rear-arm{transform:rotate(-22deg);animation:none}
+.hero[data-kind=fight-ranged] .hero-work-arm{transform:rotate(-84deg);animation:none}
+.hero[data-kind=fight-ranged] .hero-rear-arm{transform:rotate(-64deg);animation:none}
+.hero[data-kind=fight-magic] .hero-work-arm{transform:rotate(-48deg);animation:none}
+.hero[data-kind=fight-magic] .hero-rear-arm{transform:rotate(-14deg);animation:none}
+.hero[data-kind^=fight] .hero-body{animation-duration:1.4s}
+/* Victoria ante un jefe: brazo en alto, saltito y un anillo dorado. */
+.hero.hero-cheer .hero-work-arm{animation:hero-cheer-arm 1.5s ease-out both}
+.hero.hero-cheer .hero-art{animation:hero-hop .5s cubic-bezier(.3,.7,.4,1) 2}
+.hero.hero-cheer::before{content:"";position:absolute;left:50%;top:92%;width:70px;height:22px;margin:-11px 0 0 -35px;border-radius:50%;
+  border:2px solid #ffd57a;box-shadow:0 0 10px #ffc04a;animation:hero-ring 1s ease-out both;pointer-events:none}
+@keyframes hero-cheer-arm{0%{transform:rotate(-38deg)}18%,78%{transform:rotate(-172deg)}100%{transform:rotate(-38deg)}}
+@keyframes hero-hop{0%,100%{translate:0 0}45%{translate:0 -6px}}
+@keyframes hero-ring{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.5)}}
+.work-paused .hero *,.work-paused .prop,.work-paused .prop *{animation-play-state:paused!important}
+
+/* Rivales: apoyados en el piso del héroe, a su derecha. */
+.foe{position:absolute;z-index:3;pointer-events:none;display:grid;justify-items:center;gap:2px;
+  transform:translate(calc(-50% + 64px),calc(-100% + 4px));transform-origin:50% 100%;scale:var(--actor-scale,1)}
+.foe-big{transform:translate(calc(-50% + 80px),calc(-100% + 6px))}
+.foe-sprite{display:block;line-height:0}
+.foe-sprite svg{display:block;width:calc(58px * var(--foe-size,1));height:calc(53px * var(--foe-size,1));overflow:visible}
+.foe-big .foe-sprite svg{width:calc(84px * var(--foe-size,1));height:calc(77px * var(--foe-size,1))}
+.foe-body,.foe-hover,.foe-pulse{transform-box:view-box}
+.foe-sprite .foe-body{transform-origin:48px 82px;animation:foe-breathe 1.9s ease-in-out infinite}
+.foe-sprite .foe-hover{animation:foe-hover 2.4s ease-in-out infinite}
+.foe-sprite .foe-pulse{transform-origin:48px 48px;animation:foe-pulse 1.1s ease-in-out infinite}
+.foe-sprite .foe-glow,.foe-sprite .foe-core,.foe-sprite .foe-visor{animation:foe-glow 1.6s ease-in-out infinite}
+.foe-sprite .foe-ember{animation:foe-glow .7s ease-in-out infinite}
+.foe-sprite .foe-mist{animation:foe-mist 3.6s ease-in-out infinite alternate}
+@keyframes foe-breathe{0%,100%{transform:none}50%{transform:scale(1.015,1.035)}}
+@keyframes foe-hover{0%,100%{transform:none}50%{transform:translateY(-2.6px)}}
+@keyframes foe-pulse{0%,60%,100%{transform:none}12%{transform:scale(1.06)}24%{transform:scale(.98)}36%{transform:scale(1.04)}}
+@keyframes foe-glow{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes foe-mist{to{transform:translateX(7px);opacity:.55}}
+.foe-name{font:700 11px/1.1 var(--serif);color:#ffe7bd;letter-spacing:.02em;white-space:nowrap;text-shadow:0 1px 0 #000,0 0 3px #000,0 0 7px #000}
+.foe-boss .foe-name{color:#ffd27a;font-size:12px}
+.foe-hp{position:relative;display:block;width:52px;height:6px;border:1px solid #120c08;border-radius:3px;background:#2a100d;overflow:hidden;
+  box-shadow:0 0 0 1px #6b5233,0 2px 3px #0009;text-decoration:none}
+.foe-boss .foe-hp{width:74px;height:7px;box-shadow:0 0 0 1px #c19a55,0 2px 4px #000a}
+.foe-hp b,.foe-hp i{position:absolute;left:0;top:0;bottom:0;width:100%}
+.foe-hp b{background:#f4e2b0;transition:width .4s ease-in .6s}
+.foe-hp i{background:linear-gradient(#f06a52,#b8281f 70%);box-shadow:inset 0 1px #ffa08c80;transition:width .16s ease-out .22s}
+.foe-respawn .foe-hp i,.foe-respawn .foe-hp b{transition-delay:1s}
+.foe-enraged .foe-sprite{filter:drop-shadow(0 0 5px #ff3d1a)}
+.foe-enraged .foe-hp i{background:linear-gradient(#ffa040,#d0501a 70%)}
+.fr-art svg{width:46px;height:42px}
+
+/* Golpes: manchas con número (rojo acierto, azul fallo, oro golpe máximo), entran con rebote y suben al irse. */
+.scene-pop{position:absolute;z-index:6;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;
+  animation:pop-rise 1.1s cubic-bezier(.2,.8,.3,1) both}
+.scene-pop b{font:inherit;position:relative}
+@keyframes pop-rise{0%{opacity:0;translate:0 5px;scale:.4}11%{opacity:1;scale:1.22}22%{scale:1}68%{opacity:1;translate:0 -10px}100%{opacity:0;translate:0 -22px;scale:.94}}
+.pop-item .ico{width:24px;height:24px}
+.pop-hit,.pop-hurt{display:grid;place-items:center;min-width:29px;height:26px;padding:1px 5px 0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cpath d='M20 1.5 Q22 6 25 6.5 Q29 3 31.5 4.5 Q32 9 34 10.5 Q38.5 11 38.5 14 Q35.5 17 36 19.5 Q39 23 37 26 Q32.5 26 31 28 Q31 33 28 34 Q24.5 31 21 31.5 Q17.5 34.5 14.5 33.5 Q13.5 29 11 28 Q6 29.5 4.5 26.5 Q6.5 22.5 5 20 Q1 17.5 2 14.5 Q6 13 6.5 10.5 Q5 6 8 4.5 Q12 6.5 15 5.5 Q17 1.5 20 1.5Z' fill='%23c62d22' stroke='%233a0703' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M9 9 Q14 8 17 5 Q21 5 23 8.5 Q15 9 10 14 Q7.5 13 9 9Z' fill='%23ff8a6a' opacity='.55'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  color:#fff;font:15px/1 "Valle Golpe",var(--serif);font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  text-shadow:0 1px 0 #3a0703,1px 0 0 #3a0703,-1px 0 0 #3a0703,0 -1px 0 #3a0703,0 2px 2px #0008}
+.pop-hurt{min-width:26px;height:24px;font-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cpath d='M20 1.5 Q22 6 25 6.5 Q29 3 31.5 4.5 Q32 9 34 10.5 Q38.5 11 38.5 14 Q35.5 17 36 19.5 Q39 23 37 26 Q32.5 26 31 28 Q31 33 28 34 Q24.5 31 21 31.5 Q17.5 34.5 14.5 33.5 Q13.5 29 11 28 Q6 29.5 4.5 26.5 Q6.5 22.5 5 20 Q1 17.5 2 14.5 Q6 13 6.5 10.5 Q5 6 8 4.5 Q12 6.5 15 5.5 Q17 1.5 20 1.5Z' fill='%23a3202a' stroke='%232e0508' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M9 9 Q14 8 17 5 Q21 5 23 8.5 Q15 9 10 14 Q7.5 13 9 9Z' fill='%23ff7a7a' opacity='.55'/%3E%3C/svg%3E")}
+.pop-miss,.pop-hurt.pop-miss{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cpath d='M20 1.5 Q22 6 25 6.5 Q29 3 31.5 4.5 Q32 9 34 10.5 Q38.5 11 38.5 14 Q35.5 17 36 19.5 Q39 23 37 26 Q32.5 26 31 28 Q31 33 28 34 Q24.5 31 21 31.5 Q17.5 34.5 14.5 33.5 Q13.5 29 11 28 Q6 29.5 4.5 26.5 Q6.5 22.5 5 20 Q1 17.5 2 14.5 Q6 13 6.5 10.5 Q5 6 8 4.5 Q12 6.5 15 5.5 Q17 1.5 20 1.5Z' fill='%232f64a8' stroke='%230b1c38' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M9 9 Q14 8 17 5 Q21 5 23 8.5 Q15 9 10 14 Q7.5 13 9 9Z' fill='%239cc8ff' opacity='.55'/%3E%3C/svg%3E");text-shadow:0 1px 0 #0b1c38,1px 0 0 #0b1c38,-1px 0 0 #0b1c38,0 -1px 0 #0b1c38}
+.pop-max{min-width:36px;height:32px;font-size:19px;z-index:7;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cpath d='M20 1.5 Q22 6 25 6.5 Q29 3 31.5 4.5 Q32 9 34 10.5 Q38.5 11 38.5 14 Q35.5 17 36 19.5 Q39 23 37 26 Q32.5 26 31 28 Q31 33 28 34 Q24.5 31 21 31.5 Q17.5 34.5 14.5 33.5 Q13.5 29 11 28 Q6 29.5 4.5 26.5 Q6.5 22.5 5 20 Q1 17.5 2 14.5 Q6 13 6.5 10.5 Q5 6 8 4.5 Q12 6.5 15 5.5 Q17 1.5 20 1.5Z' fill='%23e0702a' stroke='%234a1404' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M9 9 Q14 8 17 5 Q21 5 23 8.5 Q15 9 10 14 Q7.5 13 9 9Z' fill='%23ffe08a' opacity='.55'/%3E%3C/svg%3E");
+  text-shadow:0 1px 0 #4a1404,1px 0 0 #4a1404,-1px 0 0 #4a1404,0 -1px 0 #4a1404,0 0 8px #ffcf5a;animation-duration:1.25s}
+.pop-max::before{content:"";position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-20 -20 40 40'%3E%3Cpath d='M0-19 3-6 11-16 6-3 19-4 7 1 16 11 3 6 4 19-1 7-11 16-6 3-19 4-7-1-16-11-3-6Z' fill='%23ffd25a'/%3E%3Ccircle r='6' fill='%23fff6d8'/%3E%3C/svg%3E") center/contain no-repeat;
+  animation:pop-burst .5s ease-out both;z-index:-1}
+.pop-hurt.pop-max{font-size:16px;min-width:31px;height:28px}
+@keyframes pop-burst{0%{opacity:1;transform:scale(.3) rotate(0)}100%{opacity:0;transform:scale(1.2) rotate(35deg)}}
+.pop-rage{font:900 15px var(--serif);color:#ff7a45;letter-spacing:.06em;text-shadow:0 1px 0 #2a0800,0 0 2px #000,0 0 10px #ff3d1a}
+.pop-heal{font:700 12px var(--serif);color:#c9f5a2;text-shadow:0 1px 0 #0d1b06,0 0 3px #0d1b06,0 0 6px #0d1b06}
+.scene-spark,.scene-dust,.scene-shot{position:absolute;z-index:5;pointer-events:none;display:block}
+.scene-spark{width:30px;height:30px;margin:-15px 0 0 -15px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-20 -20 40 40'%3E%3Cpath d='M0-19 2.6-5 13.4-13.4 5-2.6 19 0 5 2.6 13.4 13.4 2.6 5 0 19-2.6 5-13.4 13.4-5 2.6-19 0-5-2.6-13.4-13.4-2.6-5Z' fill='%23fff4cf'/%3E%3Ccircle r='5' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat;animation:spark .3s ease-out both}
+.scene-spark.spark-max{width:48px;height:48px;margin:-24px 0 0 -24px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-20 -20 40 40'%3E%3Cpath d='M0-19 3-6 11-16 6-3 19-4 7 1 16 11 3 6 4 19-1 7-11 16-6 3-19 4-7-1-16-11-3-6Z' fill='%23ffd25a'/%3E%3Ccircle r='6' fill='%23fff6d8'/%3E%3C/svg%3E")}
+@keyframes spark{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.25) rotate(30deg)}}
+.scene-dust{width:70px;height:22px;margin:-14px 0 0 -35px;border-radius:50%;
+  background:radial-gradient(circle at 25% 60%,#d9c7a2b0 0 18%,transparent 19%),radial-gradient(circle at 52% 45%,#e8d8b6c0 0 22%,transparent 23%),radial-gradient(circle at 78% 62%,#cdb994a0 0 17%,transparent 18%);
+  animation:dust .8s ease-out both}
+@keyframes dust{0%{opacity:0;transform:scale(.4,.3)}25%{opacity:1}100%{opacity:0;transform:scale(1.4,1.1) translateY(-6px)}}
+.shot-arrow{width:20px;height:3px;margin:-1.5px 0 0 -10px;border-radius:2px;background:linear-gradient(90deg,#efe6cf 0 22%,#a87a48 22% 82%,#cfd3d6 82%);box-shadow:0 0 0 1px #2a1a1199}
+.shot-orb{width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff 0 22%,var(--orb,#b9a8f0) 52%,transparent 72%);
+  box-shadow:0 0 10px 3px var(--orb,#b9a8f0)}
+
+/* Mascota: sigue al héroe por detrás, salta mientras camina. */
+.map-pet{z-index:3;width:27px;height:24px;transform:translate(calc(-50% - 22px),-92%);transform-origin:50% 92%;scale:var(--actor-scale,1)}
+.map-pet svg{display:block;width:100%;height:100%;overflow:visible}
+.map-pet[data-facing=left] svg{scale:-1 1}
+.map-pet .pet-body{transform-box:view-box;transform-origin:16px 26px;animation:pet-idle 2.2s ease-in-out infinite}
+.map-pet.pet-moving .pet-body{animation:pet-hop .3s ease-in-out infinite}
+@keyframes pet-idle{0%,100%{transform:none}50%{transform:scale(1.03,.97)}}
+@keyframes pet-hop{0%,100%{transform:scale(1.05,.95)}50%{transform:translateY(-3px) scale(.97,1.03)}}
+@media(prefers-reduced-motion:reduce){
+  .hero *,.hero-art,.foe-sprite *,.map-pet *{animation:none!important}
+  .scene-pop{animation:none}
+}
+
+/* Mapa vivo (map-life.js): el lienzo WebGL va justo encima de la ilustración y debajo de marcadores y personaje. */
+.map-life {position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
+.map-life[hidden] {display:none}
+.living-map .valley-motion,.living-map .valley-chimney {display:none}
+.map-critters {position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.map-critters[hidden] {display:none}
+.critter {position:absolute;display:block}
+.critter svg {display:block;width:100%;height:100%;overflow:visible}
+.bird {width:calc(1.35% * var(--size,1));height:calc(1.1% * var(--size,1))}
+.bird path {fill:none;stroke:#1d1a16;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;animation:bird-flap var(--flap,1.8s) linear infinite;animation-delay:var(--beat,0s);transform-origin:50% 70%}
+/* Tres aletazos y un planeo con las alas apenas levantadas. */
+@keyframes bird-flap {
+  0%,16%,32%,48% {transform:scaleY(1)}
+  8%,24%,40% {transform:scaleY(-.45)}
+  60%,92% {transform:scaleY(.72)}
+  100% {transform:scaleY(1)}
+}
+.bird .lit {stroke:#eadcb4;stroke-width:.8;opacity:.75}
+.bird-shadow {position:absolute;left:240%;top:640%;width:110%;height:60%;border-radius:50%;background:radial-gradient(closest-side,#0d0b0860,transparent)}
+.leaf {width:.7%;height:.46%;filter:hue-rotate(var(--hue,0deg)) drop-shadow(1px 2px 1px #0005)}
+.leaf path {fill:#d4a645;stroke:#8a5a22;stroke-width:.5}
+.leaf .vein {fill:none;stroke:#8a5a2299;stroke-width:.45}
+.fish {width:1.1%;height:.9%}
+.fish path {fill:#c9d7d4;stroke:#2c3d42;stroke-width:.6}
+.ripple {width:2.2%;height:1.1%;border:1.5px solid #e6f4f0a8;border-radius:50%}
+
+/* ─── Héroe anime (lienzo 64 × 96) y escala de la escena ────────────────────
+   El personaje mide ~1/9 del alto del mapa como en el prototipo del dueño; utilería y rivales crecen con él. */
+.hero{width:62px;height:93px;transform:translate(-50%,-95.8%);transform-origin:50% 95.8%}
+.hero .hero-body{transform-origin:32px 62px}
+.hero .hero-leg-a{transform-origin:27.8px 54px}
+.hero .hero-leg-b{transform-origin:36.2px 54px}
+.hero .hero-cape{transform-origin:31px 28px}
+.hero .hero-plume{transform-origin:30px 5px}
+.hero .hero-hair{transform-origin:33px 14px;animation:hero-hair 2.6s ease-in-out -.6s infinite}
+.hero .hero-bangs{transform-origin:35px 8px;animation:hero-hair 2.6s ease-in-out -.9s infinite}
+@keyframes hero-hair{0%,100%{transform:none}50%{transform:rotate(-2.5deg)}}
+.hero.walking .hero-hair,.hero.walking .hero-bangs{animation:hero-hair-wind .26s ease-in-out infinite}
+@keyframes hero-hair-wind{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(-6deg) translateY(-.4px)}}
+.hero[data-kind=mine] .hero-hair,.hero[data-kind=chop] .hero-hair,.hero[data-kind=smith] .hero-hair{animation:hero-hair-work var(--work-cycle,1.8s) infinite}
+@keyframes hero-hair-work{0%,46%,100%{transform:none}52%{transform:rotate(3deg)}60%{transform:rotate(-6deg)}72%{transform:rotate(2deg)}}
+.hero[data-kind=mine] .hero-cape,.hero[data-kind=chop] .hero-cape,.hero[data-kind=smith] .hero-cape{animation:hero-cape-work var(--work-cycle,1.8s) infinite}
+@keyframes hero-cape-work{0%,46%,100%{transform:skewX(2deg)}52%{transform:skewX(-4deg)}62%{transform:skewX(9deg)}78%{transform:skewX(3deg)}}
+.hero[data-kind^=fight] .hero-cape{animation:hero-cape 1.6s ease-in-out infinite}
+.hero.walking .hero-body{animation-name:hero-bob}
+.prop{width:67px}
+.prop[data-kind=fish]{width:55px}
+.prop[data-kind=rune],.prop[data-kind=pray]{width:90px}
+.prop[data-kind=mine],.prop[data-kind=smith]{width:100px}
+.prop[data-kind=cook]{width:91px}
+.prop[data-kind=chop]{width:128px}
+.foe{transform:translate(calc(-50% + 100px),calc(-100% + 6px))}
+.foe-big{transform:translate(calc(-50% + 120px),calc(-100% + 9px))}
+.foe-sprite svg{width:calc(100px * var(--foe-size,1));height:calc(92px * var(--foe-size,1))}
+.foe-big .foe-sprite svg{width:calc(136px * var(--foe-size,1));height:calc(125px * var(--foe-size,1))}
+.map-pet{width:38px;height:34px;transform:translate(calc(-50% - 34px),-92%)}
+.prop-art{position:relative}
+.hero-zz{display:none;position:absolute;left:60%;top:-6px;color:#fff;font:700 10px Georgia,serif;text-shadow:0 1px 2px #000}
+.hero[data-kind=rest] .hero-zz{display:block}
+/* Dos golpes por ciclo en tala y minería: el ritmo se siente vivo y las grietas avanzan golpe a golpe. */
+.hero[data-kind=mine] .hero-work-arm,.hero[data-kind=chop] .hero-work-arm,
+.hero[data-kind=mine] .hero-body,.hero[data-kind=chop] .hero-body,
+.hero[data-kind=mine] .hero-rear-arm,.hero[data-kind=chop] .hero-rear-arm,
+.hero[data-kind=mine] .hero-hair,.hero[data-kind=chop] .hero-hair,
+.hero[data-kind=mine] .hero-cape,.hero[data-kind=chop] .hero-cape,
+.prop[data-kind=chop] .tree-crown,.prop[data-kind=chop] .tree-chips,.prop[data-kind=mine] .tool-debris,
+.prop[data-kind=mine] .rock-spark,.prop[data-kind=mine] .prop-art,.tree-leaf{animation-duration:calc(var(--work-cycle,1.8s) / 2)}
+.prop[data-kind=mine] .prop-art{animation-name:rock-hit;animation-iteration-count:infinite;animation-timing-function:ease-out}
+@keyframes rock-hit{0%,52%,100%{transform:none}56%{transform:translate(2px,-1px)}61%{transform:translate(-1.5px,.5px)}68%{transform:none}}
+.rock-crack{opacity:0;animation:crack-1 var(--work-cycle,1.8s) steps(1) infinite}
+.crack-2{animation-name:crack-2}
+@keyframes crack-1{0%{opacity:0}28%{opacity:.85}99%{opacity:.85}100%{opacity:0}}
+@keyframes crack-2{0%{opacity:0}78%{opacity:.9}100%{opacity:0}}
+.rock-spark{opacity:0;transform-box:fill-box;transform-origin:center;animation:rock-spark 1s ease-out infinite}
+@keyframes rock-spark{0%,53%{opacity:0;transform:scale(.3)}56%{opacity:1;transform:scale(1.2)}66%,100%{opacity:0;transform:scale(.6) rotate(30deg)}}
+.tree-leaf{position:absolute;top:30%;left:46%;width:7px;height:4px;border-radius:70% 0;background:#6f9a3c;box-shadow:inset -1px -1px #3f6424;opacity:0;
+  animation:leaf-fall 1s ease-in infinite}
+.leaf-2{left:58%;top:24%;background:#8fae46}.leaf-3{left:36%;top:36%;background:#5c8a34}
+.tree-leaf.leaf-2{animation-name:leaf-fall-b}
+@keyframes leaf-fall{0%,54%{opacity:0;transform:none}58%{opacity:1}100%{opacity:0;transform:translate(-14px,46px) rotate(260deg)}}
+@keyframes leaf-fall-b{0%,56%{opacity:0;transform:none}60%{opacity:1}100%{opacity:0;transform:translate(12px,40px) rotate(-220deg)}}
+.fx{position:absolute;z-index:5;width:0;height:0;pointer-events:none}
+.fx b{position:absolute;left:-3px;top:-3px;width:6px;height:6px;animation:fx-fly .8s cubic-bezier(.2,.6,.4,1) both}
+@keyframes fx-fly{0%{transform:translate(0,0) rotate(0) scale(.6);opacity:1}
+  40%{transform:translate(calc(var(--dx) * .6),var(--dy)) rotate(calc(var(--r) * .5)) scale(1);opacity:1}
+  100%{transform:translate(var(--dx),calc(var(--dy) + 30px)) rotate(var(--r)) scale(.9);opacity:0}}
+.fx-leaf b{width:8px;height:5px;border-radius:70% 0;background:#78a240;box-shadow:inset -1px -1px #44672a}
+.fx-leaf b:nth-child(2n){background:#a0b84a}
+.fx-chip b{width:6px;height:3px;background:#d9a464;box-shadow:0 0 0 1px #5a3a1e}
+.fx-rock b{width:7px;height:6px;background:#7d7a72;clip-path:polygon(20% 0,100% 20%,80% 100%,0 70%)}
+.fx-rock b:nth-child(2n){background:#a19c90}
+.fx-spark b{width:4px;height:4px;border-radius:50%;background:#fff1b0;box-shadow:0 0 4px 1px #ffb540;animation-duration:.5s}
+.fx-drop b{width:4px;height:5px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#d6f3f2;box-shadow:0 0 0 1px #2c6a80aa;animation-duration:.7s}
+.fx-steam b{width:12px;height:12px;border-radius:50%;background:#f4efe6;opacity:.7;animation:fx-steam 1s ease-out both}
+@keyframes fx-steam{0%{transform:scale(.4);opacity:0}30%{opacity:.75}100%{transform:translate(calc(var(--dx) * .4),-34px) scale(1.8);opacity:0}}
+.fx-ring b,.fx-flash b,.fx-rune b,.fx-holy b{left:-16px;top:-6px;width:32px;height:12px;border-radius:50%;border:2px solid #d6f3ea;background:none;animation:fx-ring .7s ease-out both}
+.fx-flash b{left:-14px;top:-14px;width:28px;height:28px;border:0;background:radial-gradient(circle,#fff3c0,#ffae5880 45%,transparent 70%)}
+.fx-rune b{border-color:#c9b4ff;box-shadow:0 0 8px #a98bff;width:44px;height:16px;left:-22px;top:-8px}
+.fx-holy b{border-color:#ffe7a3;box-shadow:0 0 8px #ffd66a;width:44px;height:16px;left:-22px;top:-8px}
+@keyframes fx-ring{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.8);opacity:0}}
+.fx-mote b,.fx-holymote b{width:4px;height:4px;border-radius:50%;background:#e2d6ff;box-shadow:0 0 5px 2px #a98bff;animation:fx-rise .9s ease-out both}
+.fx-holymote b{background:#fff3cf;box-shadow:0 0 5px 2px #ffd66a}
+@keyframes fx-rise{0%{transform:none;opacity:0}20%{opacity:1}100%{transform:translate(calc(var(--dx) * .5),calc(var(--dy) * 1.4 - 10px));opacity:0}}
+@media(prefers-reduced-motion:reduce){.tree-leaf,.rock-spark,.fx{display:none}}
+/* Barra de experiencia sobre la cabeza (se había perdido en la integración). */
+.hero-xp{position:absolute;z-index:2;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:2px 5px;
+  width:max-content;border:1px solid #af9059;border-radius:3px;background:#1e1a11;box-shadow:0 2px 5px #000a;line-height:1}
+.hero-xp[hidden]{display:none}
+.hero-xp small{display:flex;align-items:center;gap:2px;margin:0;color:#fff0c5;font-size:10px;font-weight:700;white-space:nowrap}
+.hero-xp .ico{width:13px;height:13px}
+.hero-xp .bar{display:block;width:45px;height:6px;background:#0d0c08;border:1px solid #574527;border-radius:2px;overflow:hidden}
+.hero-xp .bar i{display:block;height:100%;background:linear-gradient(#f7d98d,#c4994e);transition:width .24s ease}
+.appearance-preview{align-items:center}
+/* Tarjeta de nivel arriba del mapa cuando el héroe trabaja abajo (santuario, muelle, mercado). */
+body.hero-low .level-feed{top:calc(var(--hud,56px) + 18px);bottom:auto!important;flex-direction:column;transform-origin:50% 0}
+.cook-pot{display:block;width:100%;overflow:visible}
+.cook-pot .stove-flame{transform-box:fill-box;transform-origin:50% 100%;animation:stove-flame .46s ease-in-out infinite alternate}
+@keyframes stove-flame{from{transform:scale(1,.88) skewX(-3deg)}to{transform:scale(1.04,1.08) skewX(3deg)}}
+.cook-pot .stew-bubble{transform-box:fill-box;transform-origin:center;animation:stew-bubble 1.3s ease-out infinite}
+.cook-pot .b2{animation-delay:-.5s}.cook-pot .b3{animation-delay:-.9s}
+@keyframes stew-bubble{0%{transform:scale(.2);opacity:0}40%{opacity:1}80%{transform:scale(1.2);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.cook-pot .stove-steam{transform-box:fill-box;transform-origin:50% 100%;animation:pot-steam 2.4s ease-out infinite}
+.cook-pot .s2{animation-delay:-1.2s}
+@keyframes pot-steam{0%{transform:translateY(6px) scale(.8);opacity:0}30%{opacity:1}100%{transform:translateY(-14px) scale(1.25);opacity:0}}
+.prop[data-kind=cook]{width:96px}
+
+/* Íconos pintados de objetos: un atlas de 16 × 14 casillas (art/objetos.webp). */
+.item-sprite{display:inline-block;background:url("art/objetos.webp") no-repeat;background-size:1600% auto;font-style:normal}
+
+/* Retratos armados por capas (rostro.js). */
+.face-paint{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%;border-radius:inherit;background:radial-gradient(circle at 50% 36%,#5a4a3a,#1d1915 78%)}
+.cs-portrait .face-paint{object-position:50% 24%}
+/* En los retratos chicos (HUD y lista) se recorta a la cara: la imagen se agranda y se centra en los ojos. */
+.hud-portrait .face-paint,.character-portrait .face-paint{width:175%;height:175%;max-width:none;margin:-22% 0 0 -45%;object-fit:cover}
+.doll-paint{display:block;height:100%;aspect-ratio:220/300;margin:0 auto;background:url("art/armaduras.webp") no-repeat}
+
+/* ─── Cámara de combate ──────────────────────────────────────────────────────
+   Durante una pelea el mapa se acerca a la arena (updateBattleCamera en game.js). Los carteles del rival y la
+   barra de XP se achican en la misma proporción para que conserven su tamaño en pantalla. */
+.map-scene{transform-origin:0 0;transform:translate(var(--cam-x,0px),var(--cam-y,0px)) scale(var(--cam-z,1));
+  transition:transform 1.1s cubic-bezier(.32,.72,.18,1)}
+.map-life,#markers,.map-ambience{transition:opacity .6s ease}
+.battle-cam .map-life,.battle-cam #markers{opacity:0;pointer-events:none}
+.battle-cam .foe-name,.battle-cam .foe-hp{scale:calc(1.25 / var(--cam-z,1));transform-origin:50% 100%}
+/* Los personajes crecen menos que el escenario (1,55× contra ~2,2×): la arena se ve amplia y entran los dos. */
+.battle-cam .map-scene{--actor-k:calc(1.55 / var(--cam-z,1))}
+.battle-cam .hero{scale:calc(var(--actor-scale,1) * var(--actor-k))}
+.battle-cam .hero-xp{scale:calc(1.25 / 1.55)}
+.battle-cam .hero-art svg{filter:drop-shadow(0 2px 1.5px #1d110970) saturate(.92) contrast(1.04)}
+.battle-cam .foe{transform:translate(calc(-50% + 100px * var(--actor-k)),calc(-100% + 6px))}
+.battle-cam .foe-sprite>svg{width:calc(100px * var(--foe-size,1) * var(--actor-k));height:calc(92px * var(--foe-size,1) * var(--actor-k))}
+.battle-cam .foe-big{transform:translate(calc(-50% + 120px * var(--actor-k)),calc(-100% + 9px))}
+.battle-cam .foe-sprite>svg{filter:drop-shadow(0 3px 2px #1d110966) saturate(.94) sepia(.08)}
+.battle-cam .foe-big .foe-sprite>svg{width:calc(130px * var(--foe-size,1) * var(--actor-k));height:calc(119px * var(--foe-size,1) * var(--actor-k))}
+.battle-cam .scene-pop{scale:calc(1.2 / var(--cam-z,1))}
+/* Sombra de contacto del rival sobre la tierra de la arena. */
+.foe-sprite{position:relative}
+.battle-cam .foe-sprite::after{content:"";position:absolute;left:18%;right:14%;bottom:2%;height:11%;border-radius:50%;
+  background:radial-gradient(closest-side,#1d1109a0,transparent);z-index:-1}
+/* Viñeta cálida mientras dura la pelea: el ruedo queda en foco y los bordes del valle se apagan. */
+.world::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .9s ease;
+  background:radial-gradient(ellipse 62% 58% at 50% 56%,transparent 55%,#120c0688 100%)}
+.battle-cam .world::before{opacity:1}
+@media (prefers-reduced-motion: reduce){.map-scene{transition:none}}
+.hero{transition:scale 1.1s cubic-bezier(.32,.72,.18,1)}
+.cam-moving .foe{transition:transform 1.1s cubic-bezier(.32,.72,.18,1)}
+.map-scene.cam-instant,.map-scene.cam-instant .hero,.map-scene.cam-instant .foe,.map-scene.cam-instant .foe-sprite>svg{transition:none}
+/* Un rival que aparece con la cámara ya cerca arranca del tamaño de siempre y se achica junto al escenario. */
+@starting-style{.cam-entering .foe-sprite>svg{width:calc(100px * var(--foe-size,1));height:calc(92px * var(--foe-size,1))}
+  .cam-entering .foe-big .foe-sprite>svg{width:calc(136px * var(--foe-size,1));height:calc(125px * var(--foe-size,1))}}
+/* El rival solo se anima de tamaño mientras la cámara entra o sale; con la cámara quieta aparece directo con su tamaño. */
+.cam-moving .foe-sprite>svg{transition:width 1.1s cubic-bezier(.32,.72,.18,1),height 1.1s cubic-bezier(.32,.72,.18,1)}
+
+/* ─── Marcador de combate ───────────────────────────────────────────────────
+   Aparece abajo del mapa mientras la cámara está sobre la arena. Los carteles flotantes del rival se ocultan. */
+.battle-hud{position:absolute;z-index:6;left:calc(var(--map-visible,100%) / 2);bottom:18px;width:min(620px,calc(var(--map-visible,100%) - 32px));
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;padding:8px 12px;
+  border:1px solid var(--gold-600,#8a6230);border-radius:14px;background:linear-gradient(#211811f2,#140e0af2);
+  box-shadow:0 0 0 1px #000,0 10px 28px #000a,inset 0 1px #ffe9b41a;pointer-events:none;
+  opacity:0;transform:translate(-50%,16px);transition:opacity .5s ease,transform .6s cubic-bezier(.32,.72,.18,1)}
+.battle-cam .battle-hud{opacity:1;transform:translate(-50%,0)}
+.battle-cam .foe-name,.battle-cam .foe-hp{visibility:hidden}
+.bh-side{display:flex;align-items:center;gap:10px;min-width:0}
+.bh-foe{justify-content:flex-end;text-align:right}
+.bh-face{flex:none;width:52px;height:52px;overflow:hidden;border-radius:50%;border:2px solid #c9a35c;background:#2a2017;box-shadow:0 0 0 1px #000}
+.bh-face .face-paint{width:175%;height:175%;max-width:none;margin:-22% 0 0 -45%;object-fit:cover}
+.bh-face svg{display:block;width:100%;height:100%}
+.bh-boss .bh-foe .bh-face{border-color:#ffd27a;box-shadow:0 0 0 1px #000,0 0 12px #ffb84a66}
+.bh-text{display:grid;gap:4px;min-width:0;flex:1}
+.bh-text b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 14px/1.1 var(--serif,Georgia,serif);color:#ffe7bd}
+.bh-text small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 11px/1.2 var(--font-sans,sans-serif);color:#cbb89a;font-variant-numeric:tabular-nums}
+.bh-bar{position:relative;display:block;height:9px;border:1px solid #0c0806;border-radius:5px;background:#2a100d;overflow:hidden}
+.bh-bar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(#7fdc6a,#3f9a35 70%);box-shadow:inset 0 1px #c8ffb880;transition:width .35s ease-out}
+.bh-bar.bh-low i{background:linear-gradient(#ffb04a,#d0601a 70%)}
+.bh-foe .bh-bar i{left:auto;right:0;background:linear-gradient(#f06a52,#b8281f 70%);box-shadow:inset 0 1px #ffa08c80}
+.bh-enraged .bh-foe small{color:#ff9a6a;font-weight:700}
+.bh-enraged .bh-foe .bh-face{animation:foe-glow .7s ease-in-out infinite alternate}
+.bh-round{display:grid;justify-items:center;padding:0 6px;font-family:var(--serif,Georgia,serif);color:#e8c98a}
+.bh-round small{font:600 9px/1 var(--font-sans,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#a89272}
+.bh-round b{font-size:24px;line-height:1.05;font-variant-numeric:tabular-nums}
+@media (max-width:760px){.battle-hud{bottom:10px;gap:6px;padding:6px 8px}.bh-face{width:38px;height:38px}.bh-text small{display:none}}
+.bh-foe .bh-face>svg{transform:scale(1.35) translateY(6%)}
+
+/* Mascotas pintadas: en el mapa siguen al héroe (más chicas que él) y en la Colección ocupan el casillero. */
+.pet-paint{display:block;width:100%;height:100%;background:url("art/mascotas.webp") no-repeat 0 0/1500% 100%}
+.map-pet{width:44px;height:40px;transform:translate(-50%,-96%)}
+.map-pet .pet-body{display:block;width:100%;height:100%;animation:none;filter:drop-shadow(0 2px 1px #1d110980)}
+/* Cuadros de caminata: 5 columnas × 60 filas (15 mascotas × 4 direcciones). */
+.pet-walk{display:block;width:100%;height:100%;background:url("art/mascotas-paseo.webp") no-repeat 0 calc(var(--pet-row) * 100% / 59)/500% 6000%}
+.pet-shadow{position:absolute;left:18%;right:18%;bottom:1px;height:5px;border-radius:50%;background:radial-gradient(closest-side,#1d110970,transparent)}
+.col-art .col-pet{width:44px;height:44px}
+
+/* Mascota quieta: la ilustración grande y nítida (mira hacia donde iba) con una respiración suave. */
+.map-pet .pet-still{display:none;position:absolute;inset:-8% -4% 0}
+.map-pet.pet-resting .pet-walk{display:none}
+.map-pet.pet-resting .pet-still{display:block;transform-origin:50% 100%;animation:pet-breathe 2.4s ease-in-out infinite}
+.map-pet.pet-resting[data-facing=left] .pet-still{scale:-1 1}
+@keyframes pet-breathe{0%,100%{transform:none}50%{transform:scale(1.025,.975)}}
+
+/* ─── Héroe pintado (heroe.js) ───────────────────────────────────────────────
+   La figura (230 × 300, pies en y = 292) se apoya en la caja del héroe; de frente o de espaldas según hacia dónde va. */
+.ph{position:absolute;inset:0}
+.ph .hero-body{position:absolute;left:50%;bottom:1.3%;height:111%;aspect-ratio:230/300;translate:-50% 0;transform-origin:50% 97%;
+  animation:ph-breathe 2.8s ease-in-out infinite}
+.ph-img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 2px 1.5px #1d110970)}
+.ph-back{display:none}
+.hero[data-view=back] .ph-back{display:block}
+.hero[data-view=back] .ph-front{display:none}
+@keyframes ph-breathe{0%,100%{transform:none}50%{transform:scale(1.008,.992)}}
+.hero.walking .ph .hero-body{animation:ph-walk .42s ease-in-out infinite}
+@keyframes ph-walk{0%,100%{transform:translateY(0) rotate(-1.2deg)}25%{transform:translateY(-3.5%) rotate(0)}50%{transform:translateY(0) rotate(1.2deg)}75%{transform:translateY(-3.5%) rotate(0)}}
+/* Lo que lleva en la mano (ícono pintado), con el giro anclado en el puño. */
+.ph-held{position:absolute;left:52%;top:40%;width:40%;aspect-ratio:1;transform-origin:22% 80%;rotate:-8deg}
+.ph-held .item-sprite{display:block;width:100%;height:100%}
+.hero[data-view=back] .ph-held{opacity:.85}
+.hero.walking .ph-held{rotate:20deg}
+.ph-shield{position:absolute;left:24%;top:42%;width:30%;aspect-ratio:1;rotate:-6deg}
+.ph-shield .item-sprite{display:block;width:100%;height:100%}
+.hero[data-view=back] .ph-shield{display:none}
+/* Trabajo: golpe con anticipación (minar, talar) y martilleo; los ataques los anima sceneStrike. */
+.hero[data-kind=mine] .ph-held,.hero[data-kind=chop] .ph-held{animation:ph-swing var(--work-cycle,1.8s) cubic-bezier(.5,0,.3,1) infinite}
+@keyframes ph-swing{0%,40%{transform:rotate(0)}55%{transform:rotate(-70deg)}66%{transform:rotate(38deg)}74%{transform:rotate(30deg)}100%{transform:rotate(0)}}
+.hero[data-kind=mine] .ph .hero-body,.hero[data-kind=chop] .ph .hero-body{animation:ph-lean var(--work-cycle,1.8s) cubic-bezier(.5,0,.3,1) infinite}
+@keyframes ph-lean{0%,40%{transform:none}55%{transform:rotate(-2.5deg) translateX(-2%)}66%{transform:rotate(3deg) translateX(3%) scaleY(.98)}100%{transform:none}}
+.hero[data-kind=smith] .ph .hero-body,.hero[data-kind=cook] .ph .hero-body,.hero[data-kind=fletch] .ph .hero-body{animation:ph-work var(--work-cycle,1.6s) ease-in-out infinite}
+@keyframes ph-work{0%,100%{transform:none}50%{transform:rotate(2deg) translateY(1.5%) scaleY(.985)}}
+.hero[data-kind=pray] .ph .hero-body{animation:ph-pray 2.6s ease-in-out infinite}
+@keyframes ph-pray{0%,100%{transform:translateY(2%) scaleY(.97)}50%{transform:translateY(1%) scaleY(.98)}}
+/* Aura de las armaduras altas (mithril en adelante), detrás de la figura. */
+.ph-aura{position:absolute;left:50%;bottom:0;width:120%;height:118%;translate:-50% 0;border-radius:50% 50% 45% 45%;opacity:0;pointer-events:none}
+.ph[class*=aura-] .ph-aura{opacity:1;animation:ph-aura 2.6s ease-in-out infinite}
+.aura-mithril .ph-aura{background:radial-gradient(ellipse 45% 50% at 50% 55%,#7fb8ff66,transparent 70%)}
+.aura-adamantita .ph-aura{background:radial-gradient(ellipse 45% 50% at 50% 55%,#5cff9a60,transparent 70%)}
+.aura-runico .ph-aura{background:radial-gradient(ellipse 46% 52% at 50% 55%,#6ff4ff88,transparent 70%)}
+.aura-dragon .ph-aura{background:radial-gradient(ellipse 48% 54% at 50% 58%,#ff6a2a88,transparent 70%)}
+@keyframes ph-aura{0%,100%{transform:scale(.94);filter:brightness(.9)}50%{transform:scale(1.05);filter:brightness(1.25)}}
+.aura-runico .ph-img,.aura-dragon .ph-img{filter:drop-shadow(0 2px 1.5px #1d110970) drop-shadow(0 0 4px var(--aura-c,#6ff4ff99))}
+.aura-dragon{--aura-c:#ff7a3a99}
+.battle-cam .hero-art .ph-img{filter:drop-shadow(0 3px 2px #1d110980)}
+/* Hoja del personaje: la figura grande. */
+.doll-preview .ph{position:relative;width:100%;height:94%}
+.doll-preview .ph .hero-body{height:100%}
+
+/* El héroe y la mascota escalan desde su punto de apoyo (los pies): con transform-origin en 0 0, la combinación
+   translate + scale + translate(-50%,-95.8%) deja los pies siempre en su lugar del mapa, también con la cámara cerca. */
+.hero,.map-pet{transform-origin:0 0}
+/* Mascota más chica que el héroe, y en combate a su espalda (no pisa al héroe ni al rival). */
+.map-pet{width:34px;height:31px}
+.battle-cam .map-pet{scale:calc(var(--actor-scale,1) * var(--actor-k,1) * .9)}
+
+.ph-tool{display:block;width:100%;height:100%;background:url("art/herramientas.webp") no-repeat 0 0/1500% 100%}
+/* Herrería: martillazo sobre el yunque. Pesca: la caña larga con un tironcito. Cocina: revolver. */
+.ph-tool-0{width:36%;left:54%;top:38%}
+.hero[data-kind=smith] .ph-held{animation:ph-hammer var(--work-cycle,1.6s) cubic-bezier(.5,0,.3,1) infinite}
+@keyframes ph-hammer{0%,45%{transform:rotate(0)}60%{transform:rotate(-55deg)}70%{transform:rotate(30deg)}78%{transform:rotate(22deg)}100%{transform:rotate(0)}}
+.ph-tool-1{width:70%;left:50%;top:5%;transform-origin:8% 92%}
+.hero[data-kind=fish] .ph-held{animation:ph-rod 3.2s ease-in-out infinite}
+@keyframes ph-rod{0%,100%{transform:rotate(6deg)}40%{transform:rotate(2deg)}55%{transform:rotate(-10deg)}62%{transform:rotate(4deg)}}
+.ph-tool-2{width:32%;left:56%;top:44%}
+.hero[data-kind=cook] .ph-held{animation:ph-stir 1.4s ease-in-out infinite}
+@keyframes ph-stir{0%,100%{transform:rotate(0) translateX(0)}50%{transform:rotate(-18deg) translateX(-6%)}}
+.ph-tool-3{width:24%;left:58%;top:50%}
+.hero[data-kind=fletch] .ph-held{animation:ph-carve .9s ease-in-out infinite}
+@keyframes ph-carve{0%,100%{transform:rotate(0)}50%{transform:rotate(-25deg)}}
+.ph-tool-14{width:22%;left:44%;top:40%;transform-origin:50% 0}
+.hero[data-kind=pray] .ph-held{animation:ph-sway 2.6s ease-in-out infinite;filter:drop-shadow(0 0 4px #ffd27a)}
+@keyframes ph-sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
